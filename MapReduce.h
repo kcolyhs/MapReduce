@@ -12,10 +12,10 @@ enum Application{
 	sort
 };
 
-void* map(char* app, enum Implementation imp, int n_maps, char* infile){
-	if(strcmp(app,"wordcount")==0){
+void* map(enum Application app, enum Implementation imp, int n_maps, char* infile){
+	if(app==wordcount){
 	//	wcParseInput() //commented out because we have no parameters in here yet
-	}else if(strcmp(app,"sort")==0){
+	}else if(app==sort){
 		
 	}else{
 		return NULL; //ERROR
@@ -28,7 +28,7 @@ void* map(char* app, enum Implementation imp, int n_maps, char* infile){
 
 	*/
 }
-void reduce(char* app, enum Implementation imp,int n_reduces, char* outfile, void* inter_data){
+void reduce(enum Application app, enum Implementation imp,int n_reduces, char* outfile, void* inter_data){
 	/*
 	1.
 	*/
