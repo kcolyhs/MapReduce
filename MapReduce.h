@@ -3,15 +3,15 @@
 #include <stdio.h>
 
 enum Implementation{
-	Processses,
-	Threads
+	procs,
+	threads
 };
 
 void* map(char* app, enum Implementation imp, int n_maps, char* infile){
 	if(strcmp(app,"wordcount")==0){
 		wcParseInput()
 	}else if(strcmp(app,"sort")==0){
-
+		
 	}else{
 		return NULL; //ERROR
 	}
