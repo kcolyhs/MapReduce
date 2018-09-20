@@ -7,6 +7,11 @@ enum Implementation{
 	threads
 };
 
+enum Application{
+	wordcount,
+	sort
+};
+
 void* map(char* app, enum Implementation imp, int n_maps, char* infile){
 	if(strcmp(app,"wordcount")==0){
 		wcParseInput()
