@@ -1,0 +1,9 @@
+Goals:
+-Parse arguments
+-Parse input file to create dynamic token list
+-Divide token list into n map tasks
+-Each task vectorizes their tokens and then merges using memcpy into a vector list
+-sort(shuffle phase) the vector list using strcmp()
+-Divide the vector into n reduce tasks
+-Merge the sorted reduced vectorlists
+-Collapse repeats and then print to output file 
