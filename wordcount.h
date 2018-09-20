@@ -10,6 +10,7 @@ typedef struct VectorList{
 typedef struct TokenList{
 	int length;
 	char** array;
+	struct TokenList *next;
 }toklist;
 //Returns parsed input file
 toklist wcParseInput(char* inputfile){

@@ -34,3 +34,4 @@ void reduce(enum Application app, enum Implementation imp,int n_reduces, char* o
 	*/
 }
 
+void* nextTokenList();
