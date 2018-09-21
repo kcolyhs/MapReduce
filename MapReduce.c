@@ -58,7 +58,7 @@ int main(int argc, char const *argv[])
 	return 0;
 }
 
-void* map(enum Application app, enum Implementation imp, int n_maps, char* infile){
+/*void* map(enum Application app, enum Implementation imp, int n_maps, char* infile){
 
 
 	//Program each task to map a token list to a vector list and combine them after each task finishes
@@ -125,4 +125,4 @@ void* nextTokenList(){
 			//Insert Method to Combine to VectorList
 		}
 	}
-}
+}*/
