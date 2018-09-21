@@ -1,3 +1,4 @@
+#include <string.h>
 //Basic struct to store key/value pairing of word to its count
 typedef struct WordVector{
 	char* word;
@@ -31,15 +32,26 @@ toklist* createTokList(int initlen){
 }
 //doubles the length of the token list at the address toklist* points to
 //by allocating twice the size copying over existing data and then freeing the old array
-void expandTokArray(toklist* tokenlist){
-	char** newarr = (char**)malloc(tokenlist->capacity*2*sizeof(char*));
-	memcpy(newarr,tokenlist->array,tokenlist->capacity*sizeof(char*));
-	free(tokenlist->array);//changed tokenlist->array.free() to free(tokenlist->array)
-	tokenlist->array = newarr;
+void expandTokArray(toklist* tlist){
+	char** newarr = (char**)malloc(tlist->capacity*2*sizeof(char*));
+	memcpy(newarr,tlist->array,tlist->capacity*sizeof(char*));
+	free(tlist->array);//changed tlist->array.free() to free(tlist->array)
+	tlist->array = newarr;
+	tlist->capacity *= 2;
 }
 //Adds a new entry to the token list
-void addToTokenlist(toklist* tokenlist,char* token){
+void addToTokenlist(toklist* tlist,char* token){
+	if(tlist->length+1>tlist->capacity){
+		expandTokArray(tlist);
+	}
+	char* newtoken = (char*)malloc(strlen(token)+1);
+	strcpy(newtoken,token);
+	tlist->array[length]=newtoken;
+	tlist->length++;
 	return;
+}
+veclist* createVecList(int initlen){
+	veclist* newlist = (toklist*)malloc(sizeof(wordvec));
 }
 
 //Converts all characters in token to lowercase
