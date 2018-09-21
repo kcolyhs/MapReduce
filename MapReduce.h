@@ -1,7 +1,7 @@
-#include "wordcount.h"
+//#include "wordcount.h"
 #include "intsort.h"
 #include <stdio.h>
-
+#include "MergeSort.c"
 enum Implementation{
 	procs,
 	threads
