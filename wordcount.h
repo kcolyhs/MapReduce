@@ -1,17 +1,18 @@
-struct WordVector{
+typedef struct WordVector{
 	char* word;
 	unsigned int count;
 }wordvec;
-struct VectorList{
+typedef struct VectorList{
 	int length;
 	int capacity;
 	wordvec* array;
 }veclist;
 
-struct TokenList{
+typedef struct TokenList{
 	int length;
 	int capacity;
 	char** array;
+	struct TokenList *next;
 }toklist;
 
 toklist* createTokList(int initlen){
@@ -36,4 +37,5 @@ toklist* wcParseInput(char* inputfile){
 }
 /*
 Functions to create:
+*/
 
