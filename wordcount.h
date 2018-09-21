@@ -42,6 +42,15 @@ void addToTokenlist(toklist* tokenlist,char* token){
 	return;
 }
 
+//Converts all characters in token to lowercase
+char* toLowerToken(char* token){
+	char *letter = token;
+	for(; *letter; letter++){
+		*letter = tolower((unsigned char) *letter);
+	}
+	
+	return token;
+}
 
 //Returns parsed input file
 toklist* wcParseInput(char* inputfile){
