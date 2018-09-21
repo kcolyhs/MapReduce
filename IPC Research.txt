@@ -1,0 +1,37 @@
+Inter-Process Communication Research For Our Project
+
+Using User-Defined Signal Handling
+	1. Include <signal.h> header file
+	2. Declaration of a data structure called sigaction
+	3. Clear sigaction data structure and set sa_handler to point to handler() function
+	4. Register the signal handler for a user-defined signal (for example SIGUSR1) by calling the sigaction() function
+
+FIFO PIPE (Named Pipes)
+	Two parts: The writer and the reader
+
+	Responsibilities of the writer:
+	1. Create the named pipe
+	2. Open the named pipe
+	3. Write n number of bytes as the size of the data structure (our dynamic array of vector lists)
+	4. Close the file and release the named pipe
+
+	Responsibilities of the reader:
+	1. Open the named pipe in read only mode
+	2. The read() function will wait for the bytes from the writer
+	3. Close the file and release the named pipe
+
+Shared Memory 
+	
+	Server Responsibilities:
+	1. Server creates shared memory for multiple processes
+	2. Server writes some data into the memory segment (again our dynamic array list)
+	3. The pointer is incremented after each write
+
+	Client Responsibilities:
+	1. Client opens memory segment in read-only
+	2. Client maps the memory segment in read-only
+	3. Client writes the memory segment content 
+
+Additional methods could be using semaphores (Yuck!)
+
+Source: https://home.deib.polimi.it/fornacia/lib/exe/fetch.php?media=teaching:aos:2016:aos201617_multiprocess_programming_updated20161223.pdf
