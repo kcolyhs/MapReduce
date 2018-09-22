@@ -66,19 +66,25 @@ char* toLowerToken(char* token){
 
 //Returns parsed input file
 toklist* wcParseInput(char* inputfile){
-	FILE *file = fopen(inputfile,"r");
-	if(file){
-		int c;
-		while((c=getc(file)) != EOF){
-			
-		}
-	}else{
-		printf("sorry, that file is invalid");
-	}
+
+        FILE* file = fopen(inputfile,"r");
+        char buffer[1024];
+        char *tok;
+	toklist * tokenList = createTokList(100);
+        while(fgets(buffer, 1024, file)!=NULL){
+                tok = strtok(buffer," .,;:!-");
+                while(tok!=NULL){
+			//lowercase strtok
+			tok = toLowerToken(tok);
+			//strip white space from token
+
+			addToTokenlist(tokenList, tok)
+                        tok = strtok(NULL, " .,;:!-");
+                }
+        }
 
 
-
-	return;
+	return tokenList;
 }
 /*
 Functions to create:

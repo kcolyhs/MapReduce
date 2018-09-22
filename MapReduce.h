@@ -14,7 +14,8 @@ enum Application{
 
 void* map(enum Application app, enum Implementation imp, int n_maps, char* infile){
 	if(app==wordcount){
-	//	wcParseInput() //commented out because we have no parameters in here yet
+		toklist * tokenlist = wcParseInput(infile); //tokenlist holds a list of all the words
+		//split the tokenlist and map 
 	}else if(app==sort){
 		
 	}else{
@@ -32,6 +33,8 @@ void reduce(enum Application app, enum Implementation imp,int n_reduces, char* o
 	/*
 	1.
 	*/
+	
+
 }
 
 void* nextTokenList();
