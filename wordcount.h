@@ -33,6 +33,7 @@ void addToTokenlist(toklist* tlist,char* token){
 	}
 	char* newtoken = (char*)malloc(strlen(token)+1);
 	strcpy(newtoken,token);
+	free(token);
 	tlist->array[length]=newtoken;
 	tlist->length++;
 	return;
@@ -88,6 +89,22 @@ char* toLowerToken(char* token){
 	
 	return token;
 }
+
+char* trimToken(char* token){
+	char* start = token;
+	while(*start||isspace(*start)){
+		start++;
+	}
+	if(!*start)
+		return null;
+	char* end = token + strlen(token)-1;
+	while(isspace(*end)){
+		end--;
+	}
+	newtoken = malloc(end-start+2);
+	memcpy(newtoken,start);
+	*newtoken+end-start+1 = NULL;
+} 
 
 //Returns parsed input file
 toklist* wcParseInput(char* inputfile){
