@@ -1,17 +1,4 @@
 #include <string.h>
-//Basic struct to store key/value pairing of word to its count
-typedef struct WordVector{
-	char* word;
-	unsigned int count;
-}wordvec;
-
-//Dynamic array for storing vector structs
-//Doubles in size when capacity is reached
-typedef struct VectorList{
-	int length;
-	int capacity;
-	wordvec* array;
-}veclist;
 
 //Dynamic array for storing the tokens after parsing input but before mapping to vectors
 //Doubles in size when capacity is reached
@@ -46,13 +33,52 @@ void addToTokenlist(toklist* tlist,char* token){
 	}
 	char* newtoken = (char*)malloc(strlen(token)+1);
 	strcpy(newtoken,token);
+	free(token);
 	tlist->array[length]=newtoken;
 	tlist->length++;
 	return;
 }
+//Basic struct to store key/value pairing of word to its count
+typedef struct WordVector{
+	char* word;
+	unsigned int count;
+}wordvec;
+
+//Dynamic array for storing vector structs
+//Doubles in size when capacity is reached
+typedef struct VectorList{
+	int length;
+	int capacity;
+	wordvec* array;
+}veclist;
+
 veclist* createVecList(int initlen){
-	veclist* newlist = (toklist*)malloc(sizeof(wordvec));
+	veclist* newlist = (toklist*)malloc(sizeof(veclist));
+	newlist->length = 0;
+	newlist->capacity = initlen;
+	newlist->array = (char**)malloc(initlen*sizeof(wordvec));
+	return newlist;
 }
+
+void expandVecArray(veclist* vlist){
+	wordvec* newarr = (wordvec*)malloc(vlist->capacity*2*sizeof(wordvec));
+	memcpy(newarr,vlist->array,vlist->capacity*sizeof(wordvec));
+	free(vlist->array);
+	vlist->array = newarr;
+	vlist->capacity *= 2;
+}
+
+void addToktoVecList(veclist* vlist,char* token){
+	if(vlist->length+1>vlist->capacity){
+		expandTokArray(vlist);
+	}
+	wordvec* newvec = vlist->array+length;
+	newvec->word = token;
+	newvec->count = 1;
+	vlist->length++;
+	return;
+}
+
 
 //Converts all characters in token to lowercase
 char* toLowerToken(char* token){
@@ -63,6 +89,22 @@ char* toLowerToken(char* token){
 	
 	return token;
 }
+
+char* trimToken(char* token){
+	char* start = token;
+	while(*start||isspace(*start)){
+		start++;
+	}
+	if(!*start)
+		return null;
+	char* end = token + strlen(token)-1;
+	while(isspace(*end)){
+		end--;
+	}
+	newtoken = malloc(end-start+2);
+	memcpy(newtoken,start);
+	*newtoken+end-start+1 = NULL;
+} 
 
 //Returns parsed input file
 toklist* wcParseInput(char* inputfile){
