@@ -16,6 +16,23 @@ void* map(enum Application app, enum Implementation imp, int n_maps, char* infil
 	if(app==wordcount){
 		toklist * tokenlist = wcParseInput(infile); //tokenlist holds a list of all the words
 		//split the tokenlist and map 
+		
+		int =0;
+		int counter =0;
+		veclist vecarr[n_maps];
+		while(counter<n_maps){
+			vecarr[counter]=createVecList(100);
+		}
+		counter=0
+		for(i=0; i <tokenlist.length; i++){
+			addToktoVecList(vecarr[counter],tokenlist->array[i])
+			counter+=1;
+			if(counter==n_maps){
+				counter=0
+			}
+		}	
+		//now we need to multithread and mergesort each vecList
+
 	}else if(app==sort){
 		
 	}else{
