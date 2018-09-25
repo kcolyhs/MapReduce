@@ -71,7 +71,7 @@ void expandVecArray(veclist* vlist){
 
 void addToktoVecList(veclist* vlist,char* token){
 	if(vlist->length+1>vlist->capacity){
-		expandTokArray(vlist);//expandTokArray takes a toklist, but is give a vlist??? why??
+		expandVecArray(vlist);//expandTokArray takes a toklist, but is give a vlist??? why?? 2ND EDIT, CHANGED EXPANDTOCLIST TO EXPANDVECARRAY
 	}
 	wordvec* newvec = vlist->array+vlist->length;
 	newvec->word = token;
