@@ -2,11 +2,12 @@
 #include <stdlib.h>
 void merge(int l, int m, int r, veclist *list){
 	int l1,l2,i;
-	veclist *tmpList = (veclist*)malloc(sizeof(list));
-	tmpList->array = malloc(sizeof(list->array));
+	veclist *tmpList = createVecList(list->length);//(veclist*)malloc(sizeof(list));
+//	tmpList->array = malloc(sizeof(list->array));
 	for (l1=l,l2=m+1,i=l;l1<=m && l2<=r; i++){
 		if(strcmp(list->array[l1].word,list->array[l2].word)<=0){
 			tmpList->array[i]=list->array[l1++];
+			
 		}else{
 			tmpList->array[i]=list->array[l2++];
 		}

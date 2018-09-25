@@ -32,7 +32,13 @@ void* map(enum Application app, enum Implementation imp, int n_maps, char* infil
 				counter=0;
 			}
 		}
-		int test =0;
+		mergeSort(0,vecarr[0]->length-1,vecarr[0]);
+		int test = 0;
+		for(test=0; test<vecarr[0]->length-1; test++){
+			printf("%s\n",vecarr[0]->array[test].word);
+
+		}
+	/*	int test =0;
 		for(test=0; test<n_maps; test++){
 			int length = vecarr[test]->length;
 			int j=0;
@@ -40,7 +46,8 @@ void* map(enum Application app, enum Implementation imp, int n_maps, char* infil
 				printf("%s\n", vecarr[test]->array[j].word);
 			}
 			printf("%s\n", "NEXT VECLISTKJSADFLKJASDFJ");
-		}	
+		}*/
+	
 		//now we need to multithread and mergesort each vecList
 		return NULL;
 	}else if(app==sort){
