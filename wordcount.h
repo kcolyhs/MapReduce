@@ -22,7 +22,7 @@ toklist* createTokList(int initlen){
 void expandTokArray(toklist* tlist){
 	char** newarr = (char**)malloc(tlist->capacity*2*sizeof(char*));
 	memcpy(newarr,tlist->array,tlist->capacity*sizeof(char*));
-	free(tlist->array);//changed tlist->array.free() to free(tlist->array)
+//	free(tlist->array);//changed tlist->array.free() to free(tlist->array)
 	tlist->array = newarr;
 	tlist->capacity *= 2;
 }
@@ -116,20 +116,15 @@ toklist* wcParseInput(char* inputfile){
 	toklist * tokenList = createTokList(100);
         while(fgets(buffer, 1024, file)!=NULL){
                 tok = strtok(buffer," .,;:!-");
-		printf("%s\n\n",tok);
                 while(tok!=NULL){
 			//lowercase strtok
 			tok = toLowerToken(tok);
 			//strip white space from token
-		//	printf("%s\n", tok);
 			addToTokenlist(tokenList, tok);
                         tok = strtok(NULL, " .,;:!-");
-	//		printf("in here");
                 }
-		printf("%s\n", "donezo");
         }
 
-	printf("%s\n","done");
 	return tokenList;
 }
 /*

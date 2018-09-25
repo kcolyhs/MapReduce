@@ -17,6 +17,11 @@ void* map(enum Application app, enum Implementation imp, int n_maps, char* infil
 	if(app==wordcount){
 		toklist * tokenlist = wcParseInput(infile); //tokenlist holds a list of all the words
 		//split the tokenlist and map 
+		int tmp = 0;
+		while(tmp<tokenlist->length){
+			printf("%s\n",tokenlist->array[tmp]);
+			tmp++;
+		}	
 		int i =0;
 		int counter =0;
 		veclist* vecarr[n_maps];
