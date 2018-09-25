@@ -1,5 +1,5 @@
 #include <string.h>
-
+#include <stdlib.h>
 //Dynamic array for storing the tokens after parsing input but before mapping to vectors
 //Doubles in size when capacity is reached
 //char** array points to an growing array of char* in the heap which in turn point to tokens as null-terminated strings
@@ -22,7 +22,7 @@ toklist* createTokList(int initlen){
 void expandTokArray(toklist* tlist){
 	char** newarr = (char**)malloc(tlist->capacity*2*sizeof(char*));
 	memcpy(newarr,tlist->array,tlist->capacity*sizeof(char*));
-	free(tlist->array);//changed tlist->array.free() to free(tlist->array)
+//	free(tlist->array);//changed tlist->array.free() to free(tlist->array)
 	tlist->array = newarr;
 	tlist->capacity *= 2;
 }
@@ -33,8 +33,9 @@ void addToTokenlist(toklist* tlist,char* token){
 	}
 	char* newtoken = (char*)malloc(strlen(token)+1);
 	strcpy(newtoken,token);
-	free(token);
-	tlist->array[length]=newtoken;
+	//free(token);
+	//printf("%s\n",newtoken);
+	tlist->array[tlist->length]=newtoken;
 	tlist->length++;
 	return;
 }
@@ -53,10 +54,10 @@ typedef struct VectorList{
 }veclist;
 
 veclist* createVecList(int initlen){
-	veclist* newlist = (toklist*)malloc(sizeof(veclist));
+	veclist* newlist = (veclist*)malloc(sizeof(veclist));
 	newlist->length = 0;
 	newlist->capacity = initlen;
-	newlist->array = (char**)malloc(initlen*sizeof(wordvec));
+	newlist->array = (char**)malloc(initlen*sizeof(wordvec));//malloc is casted to char** but newlist->array is a char*. why?
 	return newlist;
 }
 
@@ -70,9 +71,9 @@ void expandVecArray(veclist* vlist){
 
 void addToktoVecList(veclist* vlist,char* token){
 	if(vlist->length+1>vlist->capacity){
-		expandTokArray(vlist);
+		expandVecArray(vlist);//expandTokArray takes a toklist, but is give a vlist??? why?? 2ND EDIT, CHANGED EXPANDTOCLIST TO EXPANDVECARRAY
 	}
-	wordvec* newvec = vlist->array+length;
+	wordvec* newvec = vlist->array+vlist->length;
 	newvec->word = token;
 	newvec->count = 1;
 	vlist->length++;
@@ -96,31 +97,35 @@ char* trimToken(char* token){
 		start++;
 	}
 	if(!*start)
-		return null;
+		return NULL;
 	char* end = token + strlen(token)-1;
 	while(isspace(*end)){
 		end--;
 	}
-	newtoken = malloc(end-start+2);
-	memcpy(newtoken,start);
-	*newtoken+end-start+1 = NULL;
+	char* newtoken = malloc(end-start+2);
+	//memcpy(newtoken,start); COMMENTED OUT BECAUSE IDK THE SIZE -ABI
+	//*newtoken+end-start+1 = NULL; SAME
 } 
 
 //Returns parsed input file
 toklist* wcParseInput(char* inputfile){
-	FILE *file = fopen(inputfile,"r");
-	if(file){
-		int c;
-		while((c=getc(file)) != EOF){
-			
-		}
-	}else{
-		printf("sorry, that file is invalid");
-	}
 
+        FILE* file = fopen(inputfile,"r");
+        char buffer[1024];
+        char *tok;
+	toklist * tokenList = createTokList(100);
+        while(fgets(buffer, 1024, file)!=NULL){
+                tok = strtok(buffer," .,;:!-");
+                while(tok!=NULL){
+			//lowercase strtok
+			tok = toLowerToken(tok);
+			//strip white space from token
+			addToTokenlist(tokenList, tok);
+                        tok = strtok(NULL, " .,;:!-");
+                }
+        }
 
-
-	return;
+	return tokenList;
 }
 /*
 Functions to create:
