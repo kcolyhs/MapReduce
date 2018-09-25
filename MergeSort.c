@@ -1,5 +1,5 @@
 #include "wordcount.h"
-
+#include <stdlib.h>
 void merge(int l, int m, int r, veclist *list){
 	int l1,l2,i;
 	veclist *tmpList = (veclist*)malloc(sizeof(list));

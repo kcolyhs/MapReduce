@@ -1,7 +1,7 @@
 #include <string.h>
 #include <pthread.h>
 #include "MapReduce.h"
-
+#include <stdlib.h>
 pthread_t queueThread;
 
 toklist* head = NULL;
@@ -43,9 +43,9 @@ int main(int argc, char const *argv[])
 		printf("error, number of reduces is either less than or equal to zero, or is not a number");
 		return 0;
 	}
-	char* infile;
+	char* infile=malloc(strlen(argv[5])+1);
 	strcpy(infile,argv[5]);
-	char* outfile;
+	char* outfile=malloc(strlen(argv[6])+1);
 	strcpy(outfile,argv[6]);
 
 	
