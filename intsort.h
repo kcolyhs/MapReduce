@@ -35,3 +35,21 @@ void addToIntlist(intlist* tlist,char* token){
 	tlist->length++;
 	return;
 }
+
+
+//Parse Integer Sort Inputfile
+intlist * intParseInput (char *inputfile){
+
+	FILE *file = fopen(inputfile, "r");
+    char buffer[1024];
+	intlist * intList = createIntList(100);
+	
+	while (fgets(buffer, 1024, file) != NULL){
+	    char* tok;
+	    for (tok = strtok(buffer, "\t"); tok && *tok; tok = strtok(NULL, "\t\n")){
+	        addToIntlist(intList, atoi(tok));
+	    }
+    }
+
+	return intList;
+}
