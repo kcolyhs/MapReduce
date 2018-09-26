@@ -20,7 +20,7 @@ void* map(enum Application app, enum Implementation imp, int n_maps, char* infil
 		//split the tokenlist and map 
 		int i =0;
 		int counter =0;
-		veclist* vecarr[n_maps];
+		veclist** vecarr = malloc(sizeof(veclist*)*n_maps);;
 		while(counter<n_maps){
 			vecarr[counter]=createVecList(50);
 			counter+=1;
@@ -45,19 +45,19 @@ void* map(enum Application app, enum Implementation imp, int n_maps, char* infil
 						
 
 
-/*		int test =0;
-		for(test=0; test<n_maps; test++){
+		int test =0;
+/*		for(test=0; test<n_maps; test++){
 			int length = vecarr[test]->length;
 			int j=0;
 			for(j=0; j<length; j++){
 				printf("%s\n", vecarr[test]->array[j].word);
 			}
 			printf("%s\n", "NEXT VECLISTKJSADFLKJASDFJ           		NEXT VEC LIST KLAJDFLJASDF");
-		}*/
-	
-		return NULL;
+		}
+*/	
+		return (void*)vecarr;
 	}else if(app==sort){
-		intlist * integerlist = intParseInput(infile);
+		//intlist * integerlist = intParseInput(infile);
 		
 	}else{
 		return NULL; //ERROR
@@ -70,11 +70,25 @@ void* map(enum Application app, enum Implementation imp, int n_maps, char* infil
 
 	*/
 }
-void reduce(enum Application app, enum Implementation imp,int n_reduces, char* outfile, void* inter_data){
+void reduce(enum Application app, enum Implementation imp,int n_maps, int n_reduces, char* outfile, void* inter_data){
 	/*
 	1.
 	*/
-	
+	if(app==wordcount){
+		veclist** vecarr = (veclist**)inter_data;
+		int test =0;
+                for(test=0; test<n_maps; test++){
+                        int length = vecarr[test]->length;
+                        int j=0;
+                        for(j=0; j<length; j++){
+                                printf("%s\n", vecarr[test]->array[j].word);
+                        }
+                        printf("%s\n", "NEXT VECLISTKJSADFLKJASDFJ                      NEXT VEC LIST KLAJDFLJASDF");
+                }
+
+
+
+	}	
 
 }
 

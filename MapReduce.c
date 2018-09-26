@@ -54,75 +54,7 @@ int main(int argc, char const *argv[])
 	
 
 	//Synchronize
-	reduce(app,imp,n_reduces,outfile,inter_data);
+	reduce(app,imp,n_maps,n_reduces,outfile,inter_data);
 	return 0;
 }
 
-/*void* map(enum Application app, enum Implementation imp, int n_maps, char* infile){
-
-
-	//Program each task to map a token list to a vector list and combine them after each task finishes
-	if(imp == threads){
-		pthread_mutex_init(&mutex,NULL);
-
-		pthread_create(&queueThread,0, &nextTokenList, "");
-		pthread_detach(queueThread);
-
-	}
-	else if (imp==procs){
-		//Next TODO
-	}
-
-
-}
-
-void* getTokenListHead(){
-	if(head==NULL){
-		return NULL;
-	}
-	return head->array;
-}
-
-void removeTokenListHead(){
-	toklist* record = head;
-	if(head==NULL){
-		printf("Queue is Empty!");
-	}
-	if(head==tail){
-		head=tail=NULL;
-	}
-	else{
-		head=head->next;
-	}
-	free(record);
-}
-
-int queueLength(){
-	toklist* record;
-	record = head;
-	int count = 0;
-	if(head == NULL && tail == NULL){
-		return count;
-	}
-	while(record){
-		record = record->next;
-		count++; 
-	}
-	return count;
-}
-
-void* nextTokenList(){
-	while(1)
-	{
-		pthread_mutex_lock(&queueMutex);
-		int count = queueLength();
-		pthread_mutex_unlock(&queueMutex);
-		if(count>0){
-			pthread_mutex_lock(&queueMutex);
-			head = getTokenListHead();
-			removeTokenListHead();
-			pthread_mutex_unlock(&queueMutex);
-			//Insert Method to Combine to VectorList
-		}
-	}
-}*/
