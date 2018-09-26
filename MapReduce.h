@@ -51,6 +51,7 @@ void* map(enum Application app, enum Implementation imp, int n_maps, char* infil
 		//now we need to multithread and mergesort each vecList
 		return NULL;
 	}else if(app==sort){
+		intlist * integerlist = intParseInput(infile);
 		
 	}else{
 		return NULL; //ERROR
