@@ -2,6 +2,7 @@
 #include "intsort.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <pthread.h>
 #include "MergeSort.c"
 enum Implementation{
 	procs,
@@ -24,7 +25,7 @@ void* map(enum Application app, enum Implementation imp, int n_maps, char* infil
 			vecarr[counter]=createVecList(50);
 			counter+=1;
 		}
-		counter=0;
+		counter=0;//this loop goes through the tokenlist, and separates them into the n veclists for n maps
 		for(i=0; i < tokenlist->length; i++){
 			addToktoVecList(vecarr[counter],tokenlist->array[i]);
 			counter+=1;
@@ -32,23 +33,28 @@ void* map(enum Application app, enum Implementation imp, int n_maps, char* infil
 				counter=0;
 			}
 		}
-		mergeSort(0,vecarr[0]->length-1,vecarr[0]);
-		int test = 0;
-		for(test=0; test<vecarr[0]->length-1; test++){
-			printf("%s\n",vecarr[0]->array[test].word);
-
+		//this multithreads the mergesort
+		pthread_t *tid = malloc(n_maps * sizeof(pthread_t));
+		for(i=0; i<n_maps; i++){
+			pthread_create(&tid[i],NULL,mergeThreaded,(void*)vecarr[i]);
 		}
-	/*	int test =0;
+
+		for(i=0; i<n_maps; i++){
+			pthread_join(tid[i],NULL);
+		}
+						
+
+
+/*		int test =0;
 		for(test=0; test<n_maps; test++){
 			int length = vecarr[test]->length;
 			int j=0;
 			for(j=0; j<length; j++){
 				printf("%s\n", vecarr[test]->array[j].word);
 			}
-			printf("%s\n", "NEXT VECLISTKJSADFLKJASDFJ");
+			printf("%s\n", "NEXT VECLISTKJSADFLKJASDFJ           		NEXT VEC LIST KLAJDFLJASDF");
 		}*/
 	
-		//now we need to multithread and mergesort each vecList
 		return NULL;
 	}else if(app==sort){
 		intlist * integerlist = intParseInput(infile);
