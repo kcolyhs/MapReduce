@@ -11,21 +11,6 @@ typedef struct TokenList{
 	char** array;
 }toklist;
 
-/*typedef struct wordCountMap{
-	int s;
-	int e;
-	toklist * tokenlist;
-	veclist* vecarr;
-}wordCountMap;
-
-wordCountMap* createWordCountMap(int start, int end, toklist* tokenlist, veclist* vecarr){
-	wordCountMap * count = (wordCountMap*)malloc(sizeof(wordCountMap));
-	count->s = start;
-	count->e = end;
-	count->tokenlist = tokenlist;
-	count->vecarr = vecarr;
-	return count;
-}*/
 //Initiates an empty token list in the heap of length initlen returns a pointer to it
 toklist* createTokList(int initlen){
 	toklist* newlist = (toklist*)malloc(sizeof(toklist));
@@ -96,7 +81,7 @@ void addToktoVecList(veclist* vlist,char* token){
 	newvec->word = token;
 	newvec->count = 1;
 	vlist->length++;
-	pthread_mutex_unlock(&vlist->lock);
+	pthread_mutex_unlock(&vlist->unlock);
 	return;
 }
 

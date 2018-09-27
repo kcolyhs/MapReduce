@@ -36,12 +36,8 @@ void* map(enum Application app, enum Implementation imp, int n_maps, char* infil
                 	pthread_join(tid[i],NULL);
                 }
 
-//		printf("%i",vecarr->length-1);
 		mergeSort(0,vecarr->length-1,vecarr);
 
-                for(i=0; i<vecarr->length; i++){
-                        printf("%s\n", vecarr->array[i]);
-                }
 
 		//split the tokenlist and map 
 /*		int i =0;
@@ -101,22 +97,18 @@ void reduce(enum Application app, enum Implementation imp,int n_maps, int n_redu
 	1.
 	*/
 	if(app==wordcount){
-		veclist** vecarr = (veclist**)inter_data;
-/*		int test =0;
-                for(test=0; test<n_maps; test++){
-                        int length = vecarr[test]->length;
-                        int j=0;
-                        for(j=0; j<length; j++){
-                                printf("%s\n", vecarr[test]->array[j].word);
-                        }
-                        printf("%s\n", "NEXT VECLISTKJSADFLKJASDFJ                      NEXT VEC LIST KLAJDFLJASDF");
+		veclist* vecarr = (veclist**)inter_data;
+                int j=0;
+                for(j=0; j<vecarr->length; j++){
+ 	               printf("%s\n", vecarr->array[j].word);
                 }
-*/
-		int total =0;
+		
 		
 
 
-	}	
+        }
+		int total =0;
+		
 
 }
 
