@@ -26,10 +26,20 @@ void merge(int l, int m, int r, veclist *list){
 
 
 void mergeSort(int l, int r, veclist *list){
+	
 	if(l<r){
 		int m = (l+r)/2;
 		mergeSort(l,m,list);
 		mergeSort(m+1,r,list);
 		merge(l,m,r,list);
 	}
+}
+
+
+void* mergeThreaded(void* arg){
+	veclist *list = (veclist*)arg;
+	int l = 0;
+	int r = list->length-1;
+	mergeSort(l,r,list);
+
 }
