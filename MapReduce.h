@@ -17,8 +17,34 @@ enum Application{
 void* map(enum Application app, enum Implementation imp, int n_maps, char* infile){
 	if(app==wordcount){
 		toklist * tokenlist = wcParseInput(infile); //tokenlist holds a list of all the words
-		//split the tokenlist and map 
+		veclist * vecarr = createVecList(50);
+		int div = tokenlist->length / n_maps;
+		int mod = tokenlist->length % n_maps;
 		int i =0;
+		pthread_t *tid = malloc(n_maps * sizeof(pthread_t));
+		for(i=0; i<n_maps; i++){
+			int start = i *div;
+			int end = (i+1)*div;
+			if(i==n_maps-1){
+				end+=mod;
+			}
+			wordCountMap* tmp = createWordCountMap(start,end,tokenlist,vecarr);
+			pthread_create(&tid[i],NULL,mapThread,(void*)tmp);
+		}
+
+		for(i=0; i<n_maps; i++){
+                	pthread_join(tid[i],NULL);
+                }
+
+//		printf("%i",vecarr->length-1);
+		mergeSort(0,vecarr->length-1,vecarr);
+
+                for(i=0; i<vecarr->length; i++){
+                        printf("%s\n", vecarr->array[i]);
+                }
+
+		//split the tokenlist and map 
+/*		int i =0;
 		int counter =0;
 		veclist** vecarr = malloc(sizeof(veclist*)*n_maps);;
 		while(counter<n_maps){
@@ -33,8 +59,8 @@ void* map(enum Application app, enum Implementation imp, int n_maps, char* infil
 				counter=0;
 			}
 		}
-		//this multithreads the mergesort
-		pthread_t *tid = malloc(n_maps * sizeof(pthread_t));
+*/		//this multithreads the mergesort
+/*		pthread_t *tid = malloc(n_maps * sizeof(pthread_t));
 		for(i=0; i<n_maps; i++){
 			pthread_create(&tid[i],NULL,mergeThreaded,(void*)vecarr[i]);
 		}
@@ -43,9 +69,9 @@ void* map(enum Application app, enum Implementation imp, int n_maps, char* infil
 			pthread_join(tid[i],NULL);
 		}
 						
+*/
 
-
-		int test =0;
+	//	int test =0;
 /*		for(test=0; test<n_maps; test++){
 			int length = vecarr[test]->length;
 			int j=0;
@@ -76,7 +102,7 @@ void reduce(enum Application app, enum Implementation imp,int n_maps, int n_redu
 	*/
 	if(app==wordcount){
 		veclist** vecarr = (veclist**)inter_data;
-		int test =0;
+/*		int test =0;
                 for(test=0; test<n_maps; test++){
                         int length = vecarr[test]->length;
                         int j=0;
@@ -85,7 +111,9 @@ void reduce(enum Application app, enum Implementation imp,int n_maps, int n_redu
                         }
                         printf("%s\n", "NEXT VECLISTKJSADFLKJASDFJ                      NEXT VEC LIST KLAJDFLJASDF");
                 }
-
+*/
+		int total =0;
+		
 
 
 	}	

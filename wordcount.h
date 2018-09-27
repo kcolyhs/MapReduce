@@ -1,14 +1,31 @@
 #include <string.h>
+#include<pthread.h>
 #include <stdlib.h>
 //Dynamic array for storing the tokens after parsing input but before mapping to vectors
 //Doubles in size when capacity is reached
 //char** array points to an growing array of char* in the heap which in turn point to tokens as null-terminated strings
+//static pthread_mutex_t lock;
 typedef struct TokenList{
 	int length;
 	int capacity;
 	char** array;
 }toklist;
 
+/*typedef struct wordCountMap{
+	int s;
+	int e;
+	toklist * tokenlist;
+	veclist* vecarr;
+}wordCountMap;
+
+wordCountMap* createWordCountMap(int start, int end, toklist* tokenlist, veclist* vecarr){
+	wordCountMap * count = (wordCountMap*)malloc(sizeof(wordCountMap));
+	count->s = start;
+	count->e = end;
+	count->tokenlist = tokenlist;
+	count->vecarr = vecarr;
+	return count;
+}*/
 //Initiates an empty token list in the heap of length initlen returns a pointer to it
 toklist* createTokList(int initlen){
 	toklist* newlist = (toklist*)malloc(sizeof(toklist));
@@ -51,6 +68,7 @@ typedef struct VectorList{
 	int length;
 	int capacity;
 	wordvec* array;
+	pthread_mutex_t lock;
 }veclist;
 
 veclist* createVecList(int initlen){
@@ -70,6 +88,7 @@ void expandVecArray(veclist* vlist){
 }
 
 void addToktoVecList(veclist* vlist,char* token){
+	pthread_mutex_lock(&vlist->lock);
 	if(vlist->length+1>vlist->capacity){
 		expandVecArray(vlist);//expandTokArray takes a toklist, but is give a vlist??? why?? 2ND EDIT, CHANGED EXPANDTOCLIST TO EXPANDVECARRAY
 	}
@@ -77,6 +96,7 @@ void addToktoVecList(veclist* vlist,char* token){
 	newvec->word = token;
 	newvec->count = 1;
 	vlist->length++;
+	pthread_mutex_unlock(&vlist->lock);
 	return;
 }
 
@@ -127,7 +147,30 @@ toklist* wcParseInput(char* inputfile){
 
 	return tokenList;
 }
+
+typedef struct wordCountMap{
+        int s;
+        int e;
+        toklist * tokenlist;
+        veclist* vecarr;
+}wordCountMap;
+
+wordCountMap* createWordCountMap(int start, int end, toklist* tokenlist, veclist* vecarr){
+        wordCountMap * count = (wordCountMap*)malloc(sizeof(wordCountMap));
+        count->s = start;
+        count->e = end;
+        count->tokenlist = tokenlist;
+        count->vecarr = vecarr;
+        return count;
+}
+
 /*
 Functions to create:
 */
-
+void* mapThread(void* arg){
+	wordCountMap* tmp = (wordCountMap*)arg;
+	int i = tmp->s;
+	for(i=tmp->s; i<tmp->e; i++){
+		addToktoVecList(tmp->vecarr,tmp->tokenlist->array[i]);
+	}
+}
