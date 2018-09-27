@@ -1,5 +1,7 @@
 #include <string.h>
 #include <stdlib.h>
+#include <sys/shm.h>
+#include <sys/stat.h>
 //Dynamic array for storing the tokens after parsing input but before mapping to vectors
 //Doubles in size when capacity is reached
 //char** array points to an growing array of char* in the heap which in turn point to tokens as null-terminated strings
@@ -126,6 +128,16 @@ toklist* wcParseInput(char* inputfile){
         }
 
 	return tokenList;
+}
+
+//splits the vector list between the tasks
+void divideVecList(veclist* vlist,int n_reduces){
+	int remaining = vlist->length;
+	if(n_reduces>remaining){
+		return;//Error
+	}
+	
+
 }
 /*
 Functions to create:

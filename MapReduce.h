@@ -48,7 +48,7 @@ void* map(enum Application app, enum Implementation imp, int n_maps, char* infil
 			printf("%s\n", "NEXT VECLISTKJSADFLKJASDFJ");
 		}*/
 	
-		//now we need to multithread and mergesort each vecList
+		//now we need to multithread and mergesort each veclist
 		return NULL;
 	}else if(app==sort){
 		
@@ -60,15 +60,23 @@ void* map(enum Application app, enum Implementation imp, int n_maps, char* infil
 	2.Parse the input file (Parse function special for each app) void* parse(char* inputfile)
 	3.Split the data amongst the thr/pro (Initiate the Map for each process)
 	4.Collect the combined structure(potentially shuffle) and return a pointer to the shared memory
-
 	*/
 }
 void reduce(enum Application app, enum Implementation imp,int n_reduces, char* outfile, void* inter_data){
-	/*
-	1.
-	*/
-	
+	if(app == wordcount){
+		veclist* vectors = (veclist*)inter_data;
+		if(app == procs){
+			//Initiate the tasks
+			//Split between the tasks
+			//Execute the tasks
+			//Merge the tasks results
+			//Output the merged result
+		}
+	}else if(app == sort){
 
+	}else{
+		return NULL;//invalid app
+	}
 }
 
 void* nextTokenList();
