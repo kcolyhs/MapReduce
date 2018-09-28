@@ -98,20 +98,39 @@ void reduce(enum Application app, enum Implementation imp,int n_maps, int n_redu
 	//Merge the tasks results
 	//Output the merged result
 	if(app==wordcount){
-		veclist* vecarr = (veclist**)inter_data;
+		veclist* vecarr = (veclist*)inter_data;
                 int j=0;
                 for(j=0; j<vecarr->length; j++){
- 	               printf("%s\n", vecarr->array[j].word);
+ 	               //printf("%s\n", vecarr->array[j].word);
                 }
-		
-		
-
-
-        }
-		int total =0;
+		int div = vecarr->length / n_reduces;
+                int mod = vecarr->length % n_reduces;
+                int i =0;
+                pthread_t *tid = malloc(n_reduces * sizeof(pthread_t));
+		wordCountReduce ** reduce = malloc(sizeof(wordCountReduce*)*n_reduces);
+		for(j=0; j<n_reduces; j++){
+			int start = j *div;
+                        int end = (j+1)*div;
+                        if(j==n_reduces-1){
+                                end+=mod;
+                        }
+			reduce[j]=createWordCountReduce(start,end,vecarr);
+			pthread_create(&tid[j],NULL,reduceThread,(void*)reduce[j]);
+		//	printf("%p\n",(void*)reduce[j]->vecarr);
+		}
+		for(i=0; i<n_reduces; i++){
+                	pthread_join(tid[i],NULL);
+                }
+        	for(i=0; i<n_reduces; i++){
+			for(j=0; j<reduce[i]->vecarr->length-1; j++){
+				printf("%s,%i\n", reduce[i]->vecarr->array[j].word,reduce[i]->vecarr->array[j].count);
+			}
+		}	
 	}else{
 		return NULL;//invalid app
 	}
+		
+
 }
 
 void* nextTokenList();
