@@ -1,5 +1,20 @@
 #include "wordcount.h"
 #include <stdlib.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <sys/ipc.h>
+#include <sys/shm.h>
+#include <fcntl.h>
+#include <sys/mman.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/stat.h>
+#include <pthread.h>
+
+
+
+
 void merge(int l, int m, int r, veclist *list){
 	int l1,l2,i;
 	veclist *tmpList = createVecList(list->length);//(veclist*)malloc(sizeof(list));
@@ -23,6 +38,37 @@ void merge(int l, int m, int r, veclist *list){
 	}
 }
 
+void mergeProc(int l, int m, int r,int length){
+	int l1,l2,i;
+	char (*testing)[30];
+	int shm_fd = shm_open("OS", O_CREAT | O_RDWR, 0666);
+	ftruncate(shm_fd, (length+1)*30);
+	testing =mmap(0,(length+1)*30, PROT_READ | PROT_WRITE, MAP_SHARED , shm_fd, 0);
+
+        int after_fd;
+        after_fd=shm_open("after", O_CREAT | O_RDWR, 0666);
+        ftruncate(after_fd, (length+1)*30);
+        char (*after)[30];
+         after = mmap(0,(length+1)*30, PROT_READ | PROT_WRITE, MAP_SHARED, after_fd, 0);
+
+	for (l1=l,l2=m+1,i=l; l1<=m && l2<=r; i++){
+		if(strcmp(testing[l1],testing[l2])<=0){
+			strcpy(after[i],testing[l1++]);
+		}else{
+			strcpy(after[i], testing[l2++]);
+		}
+	}
+	while(l1<=m){
+		strcpy(after[i++],testing[l1++]);
+	}
+	while(l2<=r){
+		strcpy(after[i++],testing[l2++]);
+	}
+	for(i=l; i<=r; i++){
+		strcpy(testing[i],after[i]);
+	}
+}
+
 
 
 void mergeSort(int l, int r, veclist *list){
@@ -35,7 +81,14 @@ void mergeSort(int l, int r, veclist *list){
 	}
 }
 
-
+void mergeSortProc(int l, int r, int length){
+	if(l<r){
+		int m = (l+r)/2;
+		mergeSortProc(l,m,length);
+		mergeSortProc(m+1,r,length);
+		mergeProc(l,m,r,length);
+	}
+}
 void* mergeThreaded(void* arg){
 	veclist *list = (veclist*)arg;
 	int l = 0;

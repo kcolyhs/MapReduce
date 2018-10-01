@@ -9,6 +9,7 @@
 //static pthread_mutex_t lock;
 typedef struct TokenList{
 	int length;
+	int size;
 	int capacity;
 	char** array;
 }toklist;
@@ -17,6 +18,7 @@ typedef struct TokenList{
 toklist* createTokList(int initlen){
 	toklist* newlist = (toklist*)malloc(sizeof(toklist));
 	newlist->length = 0;
+	newlist->size =0;
 	newlist->capacity = initlen;
 	newlist->array = (char**)malloc(initlen*sizeof(char*));//changed newlist.array to newlist->array
 	return newlist;
@@ -37,6 +39,9 @@ void addToTokenlist(toklist* tlist,char* token){
 	}
 	char* newtoken = (char*)malloc(strlen(token)+1);
 	strcpy(newtoken,token);
+	tlist->size += strlen(newtoken);
+	tlist->size += strlen(" ");
+	tlist->size += sizeof(int);
 	//free(token);
 	//printf("%s\n",newtoken);
 	tlist->array[tlist->length]=newtoken;
