@@ -54,9 +54,6 @@ void* map(enum Application app, enum Implementation imp, int n_maps, char* infil
                 int mod = tokenlist->length % n_maps;
                 int i =0;
 		int shm_fd;
-		int numfd;
-		void* ptr;
-		int* number;
 		pthread_mutex_t *mutex = NULL;
 		pthread_mutexattr_t attrmutex;
 		pthread_mutexattr_init(&attrmutex);
@@ -66,12 +63,7 @@ void* map(enum Application app, enum Implementation imp, int n_maps, char* infil
 		mutex = (pthread_mutex_t*) mmap(NULL,sizeof(pthread_mutex_t),PROT_READ | PROT_WRITE, MAP_SHARED, des_mutex,0);
 		pthread_mutex_init(mutex, &attrmutex);
 		shm_fd = shm_open("OS", O_CREAT | O_RDWR, 0666);
-		numfd = shm_open("where", O_CREAT | O_RDWR, 0666);
-		ftruncate(numfd, sizeof(int));
 		ftruncate(shm_fd, tokenlist->length*30);
-		number = mmap(0,sizeof(int), PROT_WRITE,MAP_SHARED,numfd,0);
-		*number=0;
-		//ptr = mmap(0,tokenlist->size,PROT_WRITE,MAP_SHARED,shm_fd,0);
 
 		char (*testing)[30];
 		testing =mmap(0,tokenlist->length*30, PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd, 0);
@@ -91,40 +83,23 @@ void* map(enum Application app, enum Implementation imp, int n_maps, char* infil
 				if(i==n_maps-1)
 					end+=mod;
 				int j =0;
-				pthread_mutex_lock(mutex);
 				for(j=start; j<end; j++){
-			/*	//	pthread_mutex_lock(mutex);
-					ptr +=*number;
-					sprintf(ptr, "%s 1", tokenlist->array[j]);
-					ptr -=*number;
-					
-					*number += strlen(tokenlist->array[j]);
-					*number += strlen(" 1");
-			*/	//	pthread_mutex_unlock(mutex);
-			//		printf("%s\n", tokenlist->array[j]);
+					pthread_mutex_lock(mutex);
 					strcpy(testing[j], tokenlist->array[j]);
+					pthread_mutex_unlock(mutex);
 				}
-				pthread_mutex_unlock(mutex);
 				exit(0);
 			}	
 		}
 		for(i=0; i<n_maps; i++){
 			wait(NULL);
 		}
-/*		veclist * vecarr = createVecList(50);	
-		for(i=0; i<tokenlist->length; i++){
-			//printf("%s\n", testing[i]);
-			addToktoVecList(vecarr, testing[i]);
-		}*/
+
 		mergeSortProc(0,tokenlist->length-1, tokenlist->length-1);
 		for(i=0; i<tokenlist->length; i++){
 			printf("%s\n", after[i]);
 		}
 
-/*		mergeSort(0,vecarr->length-1,vecarr);
-		for(i=0; i<vecarr->length; i++){
-			printf("%s\n", vecarr->array[i]);
-		}*/
 	}else if(app==sort){
 		//intlist * integerlist = intParseInput(infile);
 		
