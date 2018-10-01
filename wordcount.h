@@ -9,6 +9,7 @@
 //static pthread_mutex_t lock;
 typedef struct TokenList{
 	int length;
+	int size;
 	int capacity;
 	char** array;
 }toklist;
@@ -17,6 +18,7 @@ typedef struct TokenList{
 toklist* createTokList(int initlen){
 	toklist* newlist = (toklist*)malloc(sizeof(toklist));
 	newlist->length = 0;
+	newlist->size =0;
 	newlist->capacity = initlen;
 	newlist->array = (char**)malloc(initlen*sizeof(char*));//changed newlist.array to newlist->array
 	return newlist;
@@ -37,6 +39,9 @@ void addToTokenlist(toklist* tlist,char* token){
 	}
 	char* newtoken = (char*)malloc(strlen(token)+1);
 	strcpy(newtoken,token);
+	tlist->size += strlen(newtoken);
+	tlist->size += strlen(" ");
+	tlist->size += sizeof(int);
 	//free(token);
 	//printf("%s\n",newtoken);
 	tlist->array[tlist->length]=newtoken;
@@ -46,7 +51,7 @@ void addToTokenlist(toklist* tlist,char* token){
 //Basic struct to store key/value pairing of word to its count
 typedef struct WordVector{
 	char* word;
-	unsigned int count;
+	int count;
 }wordvec;
 
 //Dynamic array for storing vector structs
@@ -83,7 +88,7 @@ void addToktoVecList(veclist* vlist,char* token){
 	newvec->word = token;
 	newvec->count = 1;
 	vlist->length++;
-	pthread_mutex_unlock(&vlist->unlock);
+	pthread_mutex_unlock(&vlist->lock);
 	return;
 }
 
@@ -169,4 +174,38 @@ void* mapThread(void* arg){
 	for(i=tmp->s; i<tmp->e; i++){
 		addToktoVecList(tmp->vecarr,tmp->tokenlist->array[i]);
 	}
+}
+
+typedef struct wordCountReduce{
+        int s;
+        int e;
+        veclist* master;
+        veclist* vecarr;
+}wordCountReduce;
+
+wordCountReduce* createWordCountReduce(int start, int end, veclist* master){
+	wordCountReduce * count = (wordCountReduce*)malloc(sizeof(wordCountReduce));
+	count->s = start;
+	count->e = end;
+	count->master = master;
+	count->vecarr = createVecList(50);
+	return count;
+}
+
+void* reduceThread(void* arg){
+	int count = 0;
+	wordCountReduce *tmp = (wordCountReduce*)arg;
+	addToktoVecList(tmp->vecarr,tmp->master->array[tmp->s].word);
+	int i = tmp->s;
+	for(;i<tmp->e-1; i++){
+		if(strcmp(tmp->master->array[i].word,tmp->master->array[i+1].word)==0){
+			tmp->vecarr->array[count].count ++;// tmp->master->array[i].count+1;
+		}else{
+			addToktoVecList(tmp->vecarr,tmp->master->array[i+1].word);
+			count++;
+		}
+		
+	}
+	//pthread_exit((void*) tmp);
+	return NULL;
 }
