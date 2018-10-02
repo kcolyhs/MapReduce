@@ -67,6 +67,14 @@ void mergeProc(int l, int m, int r,int length){
 	for(i=l; i<=r; i++){
 		strcpy(testing[i],after[i]);
 	}
+		//shm_unlink("OS");
+		//shm_unlink("after");
+		shmdt(testing);
+                shmctl(shmget(shm_fd,(length+1) * 30,O_CREAT | O_RDWR),IPC_RMID,NULL);
+                shmdt(after);
+                shmctl(shmget(after_fd,(1+length)*30,O_CREAT | O_RDWR), IPC_RMID, NULL);
+		munmap(testing, (length+1) *30);
+		munmap(after, (length+1) *30);
 }
 
 
