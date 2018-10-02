@@ -122,9 +122,15 @@ char* trimToken(char* token){
 	while(isspace(*end)){
 		end--;
 	}
-	char* newtoken = malloc(end-start+2);
-	//memcpy(newtoken,start); COMMENTED OUT BECAUSE IDK THE SIZE -ABI
-	//*newtoken+end-start+1 = NULL; SAME
+	int length = 1;
+	char* p = start;
+	while(p != end){
+		p++;
+		length++;
+	}
+	char* newtoken = malloc(length+1);
+	memcpy(newtoken,start,length);
+	*(newtoken+length) = NULL;
 } 
 
 //Returns parsed input file
