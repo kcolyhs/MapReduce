@@ -3,6 +3,14 @@
 #include <stdlib.h>
 #include <sys/shm.h>
 #include <sys/stat.h>
+#include <sys/mman.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <sys/ipc.h>
+#include <sys/shm.h>
+#include <fcntl.h>
 //Dynamic array for storing the tokens after parsing input but before mapping to vectors
 //Doubles in size when capacity is reached
 //char** array points to an growing array of char* in the heap which in turn point to tokens as null-terminated strings
@@ -127,13 +135,15 @@ toklist* wcParseInput(char* inputfile){
         char *tok;
 	toklist * tokenList = createTokList(100);
         while(fgets(buffer, 1024, file)!=NULL){
-                tok = strtok(buffer," .,;:!-");
+                tok = strtok(buffer,".,;:!-\r ");
                 while(tok!=NULL){
 			//lowercase strtok
 			tok = toLowerToken(tok);
 			//strip white space from token
+			//if(strcmp(tok,'\0')==0)
+			//	continue;
 			addToTokenlist(tokenList, tok);
-                        tok = strtok(NULL, " .,;:!-");
+                        tok = strtok(NULL, ".,;:!- ");
                 }
         }
 
@@ -208,4 +218,64 @@ void* reduceThread(void* arg){
 	}
 	//pthread_exit((void*) tmp);
 	return NULL;
+}
+
+void reduceProc(int start, int end,int length){
+	int count = 1;
+	int where =start;
+	int afterReduce_fd=shm_open("afterreduce",O_CREAT | O_RDWR, 0666);
+        char (*afterReduce)[40];
+        ftruncate(afterReduce_fd,(length*40));
+        afterReduce = mmap(0,length*40, PROT_READ | PROT_WRITE, MAP_SHARED, afterReduce_fd,0);
+	int i =0;	
+	int after_fd;
+        after_fd=shm_open("OS", O_CREAT | O_RDWR, 0666);
+        char (*after)[30];
+        ftruncate(after_fd, length*30);
+        after = mmap(0,length*30, PROT_READ | PROT_WRITE, MAP_SHARED, after_fd, 0);
+	char *abc = malloc(sizeof(char)*1000);
+//	strcpy(afterReduce[0],after[0]);
+	char *tmp;
+	tmp = malloc(strlen(after[start])+1);
+	
+	strcpy(tmp,after[start]);
+	for(i=start; i<end-1; i++){
+		if(strcmp(after[i],after[i+1])==0){
+			count+=1;
+		//	printf("%s\n", tmp);
+		}else{
+		/*	tmp=realloc(tmp, strlen(after[i]) + strlen(" \t") + sizeof(char)*5);
+			strcpy(tmp,after[i]);
+			strcat(tmp," \t");
+			sprintf(abc,"%d", count);	
+			strcat(tmp, abc);
+			strcpy(afterReduce[where],tmp);
+			count = 1;
+			where +=1;*/
+			tmp=realloc(tmp,strlen(after[i]) + strlen(" \t") + sizeof(char)*5);
+			strcat(tmp, " \t");
+			sprintf(abc, "%d",count);
+			strcat(tmp,abc);
+		//	printf("%s\n", tmp);
+			strcpy(afterReduce[where],tmp);
+			count = 1;
+			where+=1;
+			tmp = realloc(tmp,strlen(after[i+1])+1);
+			strcpy(tmp,after[i+1]);
+		}
+		
+	}
+	//strcat(afterReduce[where]," ");
+	//strcat(afterReduce[where], (char*)(count));
+	tmp = realloc(tmp,strlen(after[i])+strlen(" \t") + sizeof(char)*5);
+	strcat(tmp, " \t");
+	sprintf(abc, "%d", count);
+	strcat(tmp,abc);
+	strcpy(afterReduce[where],tmp);
+	shm_unlink("after");
+	//shm_unlink("afterreduce");
+	//shmdt(afterReduce);
+        //shmctl(shmget(afterReduce_fd,length*40,O_CREAT | O_RDWR), IPC_RMID, NULL);
+        shmdt(after);
+        shmctl(shmget(after_fd,length*30,O_CREAT | O_RDWR), IPC_RMID, NULL);
 }

@@ -95,11 +95,19 @@ void* map(enum Application app, enum Implementation imp, int n_maps, char* infil
 			wait(NULL);
 		}
 
-		mergeSortProc(0,tokenlist->length-1, tokenlist->length-1);
+		mergeSortProc(0,tokenlist->length, tokenlist->length);
 		for(i=0; i<tokenlist->length; i++){
-			printf("%s\n", after[i]);
+		//	printf("%s\n", testing[i]);
 		}
-
+		shmdt(testing);
+	//	shm_unlink("OS");
+		shm_unlink("after");
+		shmctl(shmget(shm_fd,tokenlist->length * 30,O_CREAT | O_RDWR),IPC_RMID,NULL);
+		munmap(testing, tokenlist->length *30);
+		shmdt(after);
+        	shmctl(shmget(after_fd,tokenlist->length*30,O_CREAT | O_RDWR), IPC_RMID, NULL);
+		munmap(after, tokenlist->length*30);
+		return (void*)tokenlist->length;
 	}else if(app==sort){
 		//intlist * integerlist = intParseInput(infile);
 		
@@ -122,9 +130,6 @@ void reduce(enum Application app, enum Implementation imp,int n_maps, int n_redu
 	if(app==wordcount && imp == threads){
 		veclist* vecarr = (veclist*)inter_data;
                 int j=0;
-                for(j=0; j<vecarr->length; j++){
- 	               //printf("%s\n", vecarr->array[j].word);
-                }
 		int div = vecarr->length / n_reduces;
                 int mod = vecarr->length % n_reduces;
                 int i =0;
@@ -148,11 +153,66 @@ void reduce(enum Application app, enum Implementation imp,int n_maps, int n_redu
 				printf("%s,%i\n", reduce[i]->vecarr->array[j].word,reduce[i]->vecarr->array[j].count);
 			}
 		}	
-	}else{
-		return NULL;//invalid app
-	}
+	}else if(app==wordcount && imp == procs){
+		int after_fd;
+		int length = (int)inter_data;
+                after_fd=shm_open("OS", O_CREAT | O_RDWR, 0666);
+		char (*after)[30];
+                ftruncate(after_fd, length*30);
+                after = mmap(0,length*30, PROT_READ | PROT_WRITE, MAP_SHARED, after_fd, 0);
+	
+		int afterReduce_fd=shm_open("afterreduce",O_CREAT | O_RDWR, 0666);
+		char (*afterReduce)[40];
+		ftruncate(afterReduce_fd,(length*40));
+		afterReduce = mmap(0,length*40, PROT_READ | PROT_WRITE, MAP_SHARED, afterReduce_fd,0);
 		
+	
+		int j=0;
+                int div = length / n_reduces;
+                int mod = length % n_reduces;
+                int i =0;
+		//we have the list of words sorted in after
+		//split after into different sections, and collapse em
+		//
 
+
+		reduceProc(0,length,length);
+
+/*
+		for(;i<n_reduces; i++){
+                        int pid=fork();
+                        if(pid==0){
+                                int start = i*div;
+                                int end = (i+1)*div;
+                                if(i==n_maps-1)
+                                        end+=mod;
+                                int j =0;
+				
+				reduceProc(start,end,length);
+
+                                exit(0);
+                        }
+                }
+		for(i=0; i<n_reduces; i++){
+                	wait(NULL);
+                }
+		*/
+
+		for(i=0; i<length; i++){
+			if(strcmp(afterReduce[i],"\0")==0)
+				continue;
+			printf("%s\n", afterReduce[i]);
+		}
+	shmdt(afterReduce);	
+	shmctl(shmget(afterReduce_fd,length*40,O_CREAT | O_RDWR), IPC_RMID, NULL);
+	munmap(afterReduce, length*40);
+	shmdt(after);
+	shmctl(shmget(after_fd,length*30,O_CREAT | O_RDWR), IPC_RMID, NULL);	
+	munmap(after, length*30);
+	shm_unlink("after");
+	shm_unlink("afterreduce");
+	shm_unlink("OS");
+	}
 }
 
 void* nextTokenList();
