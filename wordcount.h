@@ -123,7 +123,6 @@ char* trimToken(char* token){
 		end--;
 	}
 	size_t length = end - start +1;
-	printf("%zu\n", length);
 	char* newtoken = malloc(length+1);
 	memcpy(newtoken,start,length);
 	newtoken[length] = NULL;
