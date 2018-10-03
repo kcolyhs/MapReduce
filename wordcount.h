@@ -113,7 +113,7 @@ char* toLowerToken(char* token){
 
 char* trimToken(char* token){
 	char* start = token;
-	while(*start||isspace(*start)){
+	while(*start&&isspace(*start)){
 		start++;
 	}
 	if(!*start)
@@ -122,16 +122,13 @@ char* trimToken(char* token){
 	while(isspace(*end)){
 		end--;
 	}
-	int length = 1;
-	char* p = start;
-	while(p != end){
-		p++;
-		length++;
-	}
+	size_t length = end - start +1;
+	printf("%zu\n", length);
 	char* newtoken = malloc(length+1);
 	memcpy(newtoken,start,length);
 	newtoken[length] = NULL;
-} 
+	return newtoken;
+}
 
 //Returns parsed input file
 toklist* wcParseInput(char* inputfile){
