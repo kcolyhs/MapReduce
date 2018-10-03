@@ -130,7 +130,7 @@ char* trimToken(char* token){
 	}
 	char* newtoken = malloc(length+1);
 	memcpy(newtoken,start,length);
-	*(newtoken+length) = NULL;
+	newtoken[length] = NULL;
 } 
 
 //Returns parsed input file
