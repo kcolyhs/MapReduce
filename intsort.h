@@ -3,6 +3,7 @@
 #include <stdlib.h>
 typedef struct IntList{
 	int length;
+	int size;
 	int capacity;
 	char** array;
 }intlist;

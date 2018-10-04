@@ -38,6 +38,29 @@ void merge(int l, int m, int r, veclist *list){
 	}
 }
 
+void mergeInt(int l, int m, int r, intlist *list){
+	int l1,l2,i;
+	intlist *tmpList = createIntList(list->length);
+
+	for (l1=l,l2=m+1,i=l;l1<=m && l2<=r; i++){
+		if(list->array[l1].value < list->array[l2].value){
+			tmpList->array[i]=list->array[l1++];
+			
+		}else{
+			tmpList->array[i]=list->array[l2++];
+		}
+	}
+	while(l1<=m){
+		tmpList->array[i++]=list->array[l1++];
+	}
+	while(l2<=r){
+		tmpList->array[i++]=list->array[l2++];
+	}
+	for(i=l; i<=r; i++){
+		list->array[i]=tmpList->array[i];
+	}
+}
+
 void mergeProc(int l, int m, int r,int length){
 	int l1,l2,i;
 	char (*testing)[30];
@@ -86,6 +109,17 @@ void mergeSort(int l, int r, veclist *list){
 		mergeSort(l,m,list);
 		mergeSort(m+1,r,list);
 		merge(l,m,r,list);
+	}
+}
+
+
+void mergeSortInt(int l, int r, intlist *list){
+	
+	if(l<r){
+		int m = (l+r)/2;
+		mergeSort(l,m,list);
+		mergeSort(m+1,r,list);
+		mergeInt(l,m,r,list);
 	}
 }
 
