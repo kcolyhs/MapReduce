@@ -108,10 +108,37 @@ void* map(enum Application app, enum Implementation imp, int n_maps, char* infil
         	shmctl(shmget(after_fd,tokenlist->length*30,O_CREAT | O_RDWR), IPC_RMID, NULL);
 		munmap(after, tokenlist->length*30);
 		return (void*)tokenlist->length;
-	}else if(app==sort){
-		//intlist * integerlist = intParseInput(infile);
-		
-	}else{
+	}else if(app==sort && imp==threads){
+		intlist * integerList = intParseInput(infile);
+		intvec_list * intvec_arr = createIntVecList(50);
+		int div = integerList->length / n_maps;
+		int mod = integerList->length % n_maps;
+		int i =0;
+		pthread_t *tid = malloc(n_maps * sizeof(pthread_t));
+		for(i=0; i<n_maps; i++){
+			int start = i *div;
+			int end = (i+1)*div;
+			if(i==n_maps-1){
+				end+=mod;
+			}
+			intSortMap* tmp = createIntSortMap(start,end,integerList,intvec_arr);
+			pthread_create(&tid[i],NULL,mapIntThread,(void*)tmp);
+		}
+
+		for(i=0; i<n_maps; i++){
+                	pthread_join(tid[i],NULL);
+                }
+
+		mergeIntSort(0,intvec_arr->length-1,intvec_arr);
+
+
+		return (void*)intvec_arr;
+	}
+	else if(app==sort && imp==procs){
+		//TODO
+	}
+
+	else{
 		return NULL; //ERROR
 	}
 	/*
