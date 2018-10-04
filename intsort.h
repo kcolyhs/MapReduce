@@ -43,7 +43,7 @@ typedef struct IntVector{
 }intvec;
 
 //Dynamic array for storing Integer Vector structs
-typedef struct IntList{
+typedef struct IntVecList{
 	int length;
 	int capacity;
 	intvec* array;
@@ -72,7 +72,7 @@ void expandIntVecArray(intvec_list* vlist){
 void addIntToIntVecList(intvec_list* vlist, int value){
 	pthread_mutex_lock(&vlist->lock);
 	if(vlist->length+1>vlist->capacity){
-		expandVecArray(vlist);
+		expandIntVecArray(vlist);
 	}
 	intvec* newvec = vlist->array+vlist->length;
 	newvec->value = value;
@@ -131,6 +131,6 @@ void* mapIntThread(void* arg){
 	intSortMap* tmp = (intSortMap*)arg;
 	int i = tmp->s;
 	for(i=tmp->s; i<tmp->e; i++){
-		addIntToIntVecList(tmp->vecarr,tmp->integerList->array[i]);
+		addIntToIntVecList(tmp->intvec_arr,tmp->integerList->array[i]);
 	}
 }

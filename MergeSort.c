@@ -1,4 +1,5 @@
 #include "wordcount.h"
+#include "intsort.h"
 #include <stdlib.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -40,7 +41,7 @@ void merge(int l, int m, int r, veclist *list){
 
 void mergeInt(int l, int m, int r, intvec_list *list){
 	int l1,l2,i;
-	intvec_list *tmpList = createIntList(list->length);
+	intvec_list *tmpList = createIntVecList(list->length);
 
 	for (l1=l,l2=m+1,i=l;l1<=m && l2<=r; i++){
 		if(list->array[l1].value < list->array[l2].value){
@@ -117,8 +118,8 @@ void mergeSortInt(int l, int r, intvec_list *list){
 	
 	if(l<r){
 		int m = (l+r)/2;
-		mergeSort(l,m,list);
-		mergeSort(m+1,r,list);
+		mergeSortInt(l,m,list);
+		mergeSortInt(m+1,r,list);
 		mergeInt(l,m,r,list);
 	}
 }
