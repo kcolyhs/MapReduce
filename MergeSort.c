@@ -38,9 +38,9 @@ void merge(int l, int m, int r, veclist *list){
 	}
 }
 
-void mergeInt(int l, int m, int r, intlist *list){
+void mergeInt(int l, int m, int r, intvec_list *list){
 	int l1,l2,i;
-	intlist *tmpList = createIntList(list->length);
+	intvec_list *tmpList = createIntList(list->length);
 
 	for (l1=l,l2=m+1,i=l;l1<=m && l2<=r; i++){
 		if(list->array[l1].value < list->array[l2].value){
@@ -113,7 +113,7 @@ void mergeSort(int l, int r, veclist *list){
 }
 
 
-void mergeSortInt(int l, int r, intlist *list){
+void mergeSortInt(int l, int r, intvec_list *list){
 	
 	if(l<r){
 		int m = (l+r)/2;

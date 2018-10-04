@@ -97,3 +97,40 @@ intlist * intParseInput (char *inputfile){
 
 	return intList;
 }
+
+//Split Int List among n tasks
+void divideIntList(intvec_list* list,int n_reduces){
+	int remaining = list->length;
+	if(n_reduces>remaining){
+		return;
+	}
+	
+
+}
+
+//Integer Sort Map Struct
+typedef struct intSortMap{
+        int s;
+        int e;
+        intlist * integerList;
+        intvec_list* intvec_arr;
+}intSortMap;
+
+//Start Map for Integer Sort
+intSortMap* createIntSortMap(int start, int end, intlist* integerList, intvec_list* intvec_arr){
+        intSortMap * count = (intSortMap*)malloc(sizeof(intSortMap));
+        count->s = start;
+        count->e = end;
+        count->integerList = integerList;
+        count->intvec_arr = intvec_arr;
+        return count;
+}
+
+
+void* mapIntThread(void* arg){
+	intSortMap* tmp = (intSortMap*)arg;
+	int i = tmp->s;
+	for(i=tmp->s; i<tmp->e; i++){
+		addIntToIntVecList(tmp->vecarr,tmp->integerList->array[i]);
+	}
+}
