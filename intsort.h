@@ -42,13 +42,18 @@ typedef struct IntVector{
 }intvec;
 
 //Dynamic array for storing Integer Vector structs
+<<<<<<< Updated upstream
 typedef struct IntVecList{
 	int length;
+=======
+typedef struct IntLista{
+	int length;  
+>>>>>>> Stashed changes
 	int capacity;
 	intvec* array;
 	pthread_mutex_t lock;
 }intvec_list;
-
+  
 //Create New Dynamic Integer Vector List 
 intvec_list* createIntVecList(int initlen){
 	intvec_list* newlist = (intvec_list*)malloc(sizeof(intvec_list));

@@ -26,6 +26,7 @@ void* map(enum Application app, enum Implementation imp, int n_maps, char* infil
 	if(app==wordcount && imp==threads){
 		toklist * tokenlist = wcParseInput(infile); //tokenlist holds a list of all the words
 		veclist * vecarr = createVecList(50);
+		int iter = 0;
 		int div = tokenlist->length / n_maps;
 		int mod = tokenlist->length % n_maps;
 		int i =0;
@@ -97,17 +98,18 @@ void* map(enum Application app, enum Implementation imp, int n_maps, char* infil
 
 		mergeSortProc(0,tokenlist->length, tokenlist->length);
 		for(i=0; i<tokenlist->length; i++){
-		//	printf("%s\n", testing[i]);
+//			printf("%s\n", testing[i]);
 		}
 		shmdt(testing);
 	//	shm_unlink("OS");
 		shm_unlink("after");
 		shmctl(shmget(shm_fd,tokenlist->length * 30,O_CREAT | O_RDWR),IPC_RMID,NULL);
-		munmap(testing, tokenlist->length *30);
+		//munmap(testing, tokenlist->length *30);
 		shmdt(after);
         	shmctl(shmget(after_fd,tokenlist->length*30,O_CREAT | O_RDWR), IPC_RMID, NULL);
 		munmap(after, tokenlist->length*30);
 		return (void*)tokenlist->length;
+<<<<<<< Updated upstream
 	}else if(app==sort && imp==threads){
 		intlist * integerList = intParseInput(infile);
 		intvec_list * intvec_arr = createIntVecList(50);
@@ -136,18 +138,15 @@ void* map(enum Application app, enum Implementation imp, int n_maps, char* infil
 	}
 	else if(app==sort && imp==procs){
 		//TODO
-	}
-
-	else{
 		return NULL; //ERROR
 	}
+}
 	/*
 	1.Create a process or thread for every one of n_maps
 	2.Parse the input file (Parse function special for each app) void* parse(char* inputfile)
 	3.Split the data amongst the thr/pro (Initiate the Map for each process)
 	4.Collect the combined structure(potentially shuffle) and return a pointer to the shared memory
 	*/
-}
 void reduce(enum Application app, enum Implementation imp,int n_maps, int n_reduces, char* outfile, void* inter_data){
 	//Initiate the tasks
 	//Split between the tasks
@@ -183,7 +182,7 @@ void reduce(enum Application app, enum Implementation imp,int n_maps, int n_redu
 	}else if(app==wordcount && imp == procs){
 		int after_fd;
 		int length = (int)inter_data;
-                after_fd=shm_open("OS", O_CREAT | O_RDWR, 0666);
+                after_fd=shm_open("after", O_CREAT | O_RDWR, 0666);
 		char (*after)[30];
                 ftruncate(after_fd, length*30);
                 after = mmap(0,length*30, PROT_READ | PROT_WRITE, MAP_SHARED, after_fd, 0);
@@ -193,19 +192,23 @@ void reduce(enum Application app, enum Implementation imp,int n_maps, int n_redu
 		ftruncate(afterReduce_fd,(length*40));
 		afterReduce = mmap(0,length*40, PROT_READ | PROT_WRITE, MAP_SHARED, afterReduce_fd,0);
 		
+        char (*testing)[30];
+        int shm_fd = shm_open("OS", O_CREAT | O_RDWR, 0666);
+        ftruncate(shm_fd, (length+1)*30);
+        testing =mmap(0,(length+1)*30, PROT_READ | PROT_WRITE, MAP_SHARED , shm_fd, 0);
+	int i=0;
 	
 		int j=0;
                 int div = length / n_reduces;
                 int mod = length % n_reduces;
-                int i =0;
 		//we have the list of words sorted in after
 		//split after into different sections, and collapse em
 		//
 
 
-		reduceProc(0,length,length);
+		//reduceProc(0,length,length);
 
-/*
+
 		for(;i<n_reduces; i++){
                         int pid=fork();
                         if(pid==0){
@@ -223,13 +226,20 @@ void reduce(enum Application app, enum Implementation imp,int n_maps, int n_redu
 		for(i=0; i<n_reduces; i++){
                 	wait(NULL);
                 }
-		*/
+	//	reduceProc(0,length,length);		
 
 		for(i=0; i<length; i++){
 			if(strcmp(afterReduce[i],"\0")==0)
 				continue;
 			printf("%s\n", afterReduce[i]);
 		}
+	FILE *f = fopen(outfile, "w");
+	for(i=0; i<length; i++){
+		if(strcmp(afterReduce[i],"\0")==0)
+			continue;
+		fprintf(f,"%s\n", afterReduce[i]);
+	}
+	fclose(f);
 	shmdt(afterReduce);	
 	shmctl(shmget(afterReduce_fd,length*40,O_CREAT | O_RDWR), IPC_RMID, NULL);
 	munmap(afterReduce, length*40);
