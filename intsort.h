@@ -3,6 +3,7 @@
 #include <stdlib.h>
 typedef struct IntList{
 	int length;
+	int size;
 	int capacity;
 	char** array;
 }intlist;
@@ -42,7 +43,7 @@ typedef struct IntVector{
 }intvec;
 
 //Dynamic array for storing Integer Vector structs
-typedef struct IntList{
+typedef struct IntVecList{
 	int length;
 	int capacity;
 	intvec* array;
@@ -71,7 +72,7 @@ void expandIntVecArray(intvec_list* vlist){
 void addIntToIntVecList(intvec_list* vlist, int value){
 	pthread_mutex_lock(&vlist->lock);
 	if(vlist->length+1>vlist->capacity){
-		expandVecArray(vlist);
+		expandIntVecArray(vlist);
 	}
 	intvec* newvec = vlist->array+vlist->length;
 	newvec->value = value;
@@ -95,4 +96,41 @@ intlist * intParseInput (char *inputfile){
     }
 
 	return intList;
+}
+
+//Split Int List among n tasks
+void divideIntList(intvec_list* list,int n_reduces){
+	int remaining = list->length;
+	if(n_reduces>remaining){
+		return;
+	}
+	
+
+}
+
+//Integer Sort Map Struct
+typedef struct intSortMap{
+        int s;
+        int e;
+        intlist * integerList;
+        intvec_list* intvec_arr;
+}intSortMap;
+
+//Start Map for Integer Sort
+intSortMap* createIntSortMap(int start, int end, intlist* integerList, intvec_list* intvec_arr){
+        intSortMap * count = (intSortMap*)malloc(sizeof(intSortMap));
+        count->s = start;
+        count->e = end;
+        count->integerList = integerList;
+        count->intvec_arr = intvec_arr;
+        return count;
+}
+
+
+void* mapIntThread(void* arg){
+	intSortMap* tmp = (intSortMap*)arg;
+	int i = tmp->s;
+	for(i=tmp->s; i<tmp->e; i++){
+		addIntToIntVecList(tmp->intvec_arr,tmp->integerList->array[i]);
+	}
 }

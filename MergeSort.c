@@ -1,4 +1,5 @@
 #include "wordcount.h"
+#include "intsort.h"
 #include <stdlib.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -21,6 +22,29 @@ void merge(int l, int m, int r, veclist *list){
 //	tmpList->array = malloc(sizeof(list->array));
 	for (l1=l,l2=m+1,i=l;l1<=m && l2<=r; i++){
 		if(strcmp(list->array[l1].word,list->array[l2].word)<=0){
+			tmpList->array[i]=list->array[l1++];
+			
+		}else{
+			tmpList->array[i]=list->array[l2++];
+		}
+	}
+	while(l1<=m){
+		tmpList->array[i++]=list->array[l1++];
+	}
+	while(l2<=r){
+		tmpList->array[i++]=list->array[l2++];
+	}
+	for(i=l; i<=r; i++){
+		list->array[i]=tmpList->array[i];
+	}
+}
+
+void mergeInt(int l, int m, int r, intvec_list *list){
+	int l1,l2,i;
+	intvec_list *tmpList = createIntVecList(list->length);
+
+	for (l1=l,l2=m+1,i=l;l1<=m && l2<=r; i++){
+		if(list->array[l1].value < list->array[l2].value){
 			tmpList->array[i]=list->array[l1++];
 			
 		}else{
@@ -86,6 +110,17 @@ void mergeSort(int l, int r, veclist *list){
 		mergeSort(l,m,list);
 		mergeSort(m+1,r,list);
 		merge(l,m,r,list);
+	}
+}
+
+
+void mergeSortInt(int l, int r, intvec_list *list){
+	
+	if(l<r){
+		int m = (l+r)/2;
+		mergeSortInt(l,m,list);
+		mergeSortInt(m+1,r,list);
+		mergeInt(l,m,r,list);
 	}
 }
 
