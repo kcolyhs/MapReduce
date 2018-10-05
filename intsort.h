@@ -5,7 +5,7 @@ typedef struct IntList{
 	int length;
 	int size;
 	int capacity;
-	char** array;
+	int* array;
 }intlist;
 
 //Placeholder for Integer List from Sort CSV File
@@ -13,27 +13,26 @@ intlist* createIntList(int initlen){
 	intlist* newlist = (intlist*)malloc(sizeof(intlist));
 	newlist->length = 0;
 	newlist->capacity = initlen;
-	newlist->array = (char**)malloc(initlen*sizeof(char*));
+	newlist->array = (int*)malloc(initlen*sizeof(int));
 	return newlist;
 }
 
 //Placeholder to Dynamically Expand Integer List Array
-void expandIntArray(intlist* tlist){
-	char** newarr = (char**)malloc(tlist->capacity*2*sizeof(char*));
-	memcpy(newarr,tlist->array,tlist->capacity*sizeof(char*));
-	tlist->array = newarr;
-	tlist->capacity *= 2;
+void expandIntArray(intlist* list){
+	int* newarr = (int*)malloc(list->capacity*2*sizeof(int));
+	memcpy(newarr,list->array,list->capacity*sizeof(int));
+	//free old array
+	list->array = newarr;
+	list->capacity *= 2;
 }
 
 //Placeholder to add number to Integer List
-void addToIntlist(intlist* tlist,char* token){
-	if(tlist->length+1>tlist->capacity){
-		expandIntArray(tlist);
+void addToIntlist(intlist* list,int num){
+	if(list->length+1>list->capacity){
+		expandIntArray(list);
 	}
-	char* newtoken = (char*)malloc(strlen(token)+1);
-	strcpy(newtoken,token);
-	tlist->array[tlist->length]=newtoken;
-	tlist->length++;
+	list->array[list->length]=num;
+	list->length++;
 	return;
 }
 
