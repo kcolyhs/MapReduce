@@ -156,7 +156,7 @@ toklist* wcParseInput(char* inputfile){
                 while(tok!=NULL){
 			//lowercase strtok
 			tok = toLowerToken(tok);
-			//RemoveSpaces(tok);
+			RemoveSpaces(tok);
 		//	printf("%s %i\n", tok,strlen(tok));
 			//strip white space from token
 			if(tok==0)
