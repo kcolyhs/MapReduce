@@ -133,3 +133,9 @@ void* mapIntThread(void* arg){
 		addIntToIntVecList(tmp->intvec_arr,tmp->integerList->array[i]);
 	}
 }
+
+void* reduceIntThread(void* arg){
+
+}
+
+

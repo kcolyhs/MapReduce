@@ -49,7 +49,7 @@ int main(int argc, char const *argv[]){
 
 	
 	//Map phase
-	void* inter_data = map(app,imp,n_maps,infile);//Only return status code
+	void* inter_data = map(app,imp,n_maps,infile,outfile);//Only return status code
 	
 
 	//Synchronize

@@ -22,7 +22,7 @@ enum Application{
 	sort
 };
 
-void* map(enum Application app, enum Implementation imp, int n_maps, char* infile){
+void* map(enum Application app, enum Implementation imp, int n_maps, char* infile, char* outfile){
 	if(app==wordcount && imp==threads){
 		toklist * tokenlist = wcParseInput(infile); //tokenlist holds a list of all the words
 		veclist * vecarr = createVecList(50);
@@ -167,11 +167,11 @@ void* map(enum Application app, enum Implementation imp, int n_maps, char* infil
 
 
 
-        int after_fd;
-        after_fd=shm_open("after", O_CREAT | O_RDWR, 0666);
-        ftruncate(after_fd, intvec_arr->length*sizeof(int));
-        int *after;
-        after = mmap(0,intvec_arr->length*sizeof(int), PROT_READ | PROT_WRITE, MAP_SHARED, after_fd, 0);
+		int after_fd;
+		after_fd=shm_open("after", O_CREAT | O_RDWR, 0666);
+		ftruncate(after_fd, intvec_arr->length*sizeof(int));
+		int *after;
+		after = mmap(0,intvec_arr->length*sizeof(int), PROT_READ | PROT_WRITE, MAP_SHARED, after_fd, 0);
 
 
 		for(;i<n_maps; i++){
@@ -195,17 +195,18 @@ void* map(enum Application app, enum Implementation imp, int n_maps, char* infil
 			wait(NULL);
 		}
 
+		munmap(after_fd, intvec_arr->length*sizeof(int));
+
 		//mergeSortIntProc(0,intvec_arr->length-1,intvec_arr->length);
-		
-	                intvec_list * intvec_arra = createIntVecList(50);
+
+		intvec_list * intvec_arra = createIntVecList(50);
 
 		for(i=0; i<intvec_arr->length; i++){
 			addIntToIntVecList(intvec_arra,testing[i]);
 		}
-		                mergeSortInt(0,intvec_arra->length-1,intvec_arra);
+		mergeSortInt(0,intvec_arra->length-1,intvec_arra);
 		FILE *f = fopen(outfile,"w");
 		for(i=0; i<intvec_arra->length; i++){
-			//printf("%i\n", intvec_arra->array[i]);
 			fprintf(f, "%i\n", intvec_arra->array[i]);
 		}
 		fclose(f);
@@ -311,7 +312,7 @@ void reduce(enum Application app, enum Implementation imp,int n_maps, int n_redu
 				break;
 			}
 			newlen+=1;
-		//	printf("%s\n", afterReduce[i]);
+			//	printf("%s\n", afterReduce[i]);
 		}
 
 		FILE *f = fopen(outfile, "w");
@@ -331,11 +332,38 @@ void reduce(enum Application app, enum Implementation imp,int n_maps, int n_redu
 		shm_unlink("afterreduce");
 		shm_unlink("OS");
 	}else if(app==sort && imp == procs){
-	
+		int i =0;
+		for(;i<n_reduces; i++){
+			int pid=fork();
+			if(pid==0){
+
+				exit(0);
+			}
+		}
+		for(i=0; i<n_reduces; i++){
+			wait(NULL);
+		}	
+
+		
 	}else if(app==sort && imp == threads){
+		
+	
+		int i;
+                pthread_t *tid = malloc(n_maps * sizeof(pthread_t));
+                for(i=0; i<n_maps; i++){
+                        //intSortMap* tmp = createIntSortMap(start,end,integerList,intvec_arr);
+                        pthread_create(&tid[i],NULL,reduceIntThread,(void*)NULL);
+                }
+
+                for(i=0; i<n_maps; i++){
+                        pthread_join(tid[i],NULL);
+                }
+
+
 
 
 	} 
 }
 
 void* nextTokenList();
+
