@@ -48,7 +48,7 @@ typedef struct IntVecList{
 	intvec* array;
 	pthread_mutex_t lock;
 }intvec_list;
-
+  
 //Create New Dynamic Integer Vector List 
 intvec_list* createIntVecList(int initlen){
 	intvec_list* newlist = (intvec_list*)malloc(sizeof(intvec_list));

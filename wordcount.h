@@ -129,6 +129,21 @@ char* trimToken(char* token){
 	return newtoken;
 }
 
+void RemoveSpaces(char* source)
+{
+  char* i = source;
+  char* j = source;
+  while(*j != 0)
+  {
+    *i = *j++;
+    if(*i != ' ')
+      i++;
+  }
+  *i = 0;
+}
+
+
+
 //Returns parsed input file
 toklist* wcParseInput(char* inputfile){
 
@@ -137,15 +152,17 @@ toklist* wcParseInput(char* inputfile){
         char *tok;
 	toklist * tokenList = createTokList(100);
         while(fgets(buffer, 1024, file)!=NULL){
-                tok = strtok(buffer,".,;:!-\r ");
+                tok = strtok(buffer,"-.,;:!-\r\t\n ");
                 while(tok!=NULL){
 			//lowercase strtok
 			tok = toLowerToken(tok);
+			RemoveSpaces(tok);
+		//	printf("%s %i\n", tok,strlen(tok));
 			//strip white space from token
-			//if(strcmp(tok,'\0')==0)
-			//	continue;
+			if(tok==0)
+				continue;
 			addToTokenlist(tokenList, tok);
-                        tok = strtok(NULL, ".,;:!- ");
+                        tok = strtok(NULL, "-.,;:!- \r\t\n ");
                 }
         }
 
@@ -236,7 +253,6 @@ void reduceProc(int start, int end,int length){
         ftruncate(after_fd, length*30);
         after = mmap(0,length*30, PROT_READ | PROT_WRITE, MAP_SHARED, after_fd, 0);
 	char *abc = malloc(sizeof(char)*1000);
-//	strcpy(afterReduce[0],after[0]);
 	char *tmp;
 	tmp = malloc(strlen(after[start])+1);
 	
@@ -246,14 +262,6 @@ void reduceProc(int start, int end,int length){
 			count+=1;
 		//	printf("%s\n", tmp);
 		}else{
-		/*	tmp=realloc(tmp, strlen(after[i]) + strlen(" \t") + sizeof(char)*5);
-			strcpy(tmp,after[i]);
-			strcat(tmp," \t");
-			sprintf(abc,"%d", count);	
-			strcat(tmp, abc);
-			strcpy(afterReduce[where],tmp);
-			count = 1;
-			where +=1;*/
 			tmp=realloc(tmp,strlen(after[i]) + strlen(" \t") + sizeof(char)*5);
 			strcat(tmp, " \t");
 			sprintf(abc, "%d",count);
@@ -267,17 +275,12 @@ void reduceProc(int start, int end,int length){
 		}
 		
 	}
-	//strcat(afterReduce[where]," ");
-	//strcat(afterReduce[where], (char*)(count));
 	tmp = realloc(tmp,strlen(after[i])+strlen(" \t") + sizeof(char)*5);
 	strcat(tmp, " \t");
 	sprintf(abc, "%d", count);
 	strcat(tmp,abc);
 	strcpy(afterReduce[where],tmp);
 	shm_unlink("after");
-	//shm_unlink("afterreduce");
-	//shmdt(afterReduce);
-        //shmctl(shmget(afterReduce_fd,length*40,O_CREAT | O_RDWR), IPC_RMID, NULL);
         shmdt(after);
         shmctl(shmget(after_fd,length*30,O_CREAT | O_RDWR), IPC_RMID, NULL);
 }

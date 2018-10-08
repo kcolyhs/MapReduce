@@ -75,6 +75,14 @@ void mergeProc(int l, int m, int r,int length){
         char (*after)[30];
          after = mmap(0,(length+1)*30, PROT_READ | PROT_WRITE, MAP_SHARED, after_fd, 0);
 
+
+	int after_sort;
+        after_sort=shm_open("aftersort", O_CREAT | O_RDWR, 0666);
+        ftruncate(after_sort, (length+1)*30);
+        char (*aftersort)[30];
+         aftersort = mmap(0,(length+1)*30, PROT_READ | PROT_WRITE, MAP_SHARED, after_sort, 0);
+
+
 	for (l1=l,l2=m+1,i=l; l1<=m && l2<=r; i++){
 		if(strcmp(testing[l1],testing[l2])<=0){
 			strcpy(after[i],testing[l1++]);
@@ -90,15 +98,17 @@ void mergeProc(int l, int m, int r,int length){
 	}
 	for(i=l; i<=r; i++){
 		strcpy(testing[i],after[i]);
+		//printf("%s\n", aftersort[i]);
 	}
+		//printf("%s\n","in sort");
 		//shm_unlink("OS");
 		//shm_unlink("after");
 		shmdt(testing);
                 shmctl(shmget(shm_fd,(length+1) * 30,O_CREAT | O_RDWR),IPC_RMID,NULL);
                 shmdt(after);
                 shmctl(shmget(after_fd,(1+length)*30,O_CREAT | O_RDWR), IPC_RMID, NULL);
-		munmap(testing, (length+1) *30);
-		munmap(after, (length+1) *30);
+		//munmap(testing, (length+1) *30);
+		munmap(after_sort, (length+1) *30);
 }
 
 

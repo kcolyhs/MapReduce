@@ -11,8 +11,7 @@ pthread_mutex_t mutex;
 pthread_mutex_t queueMutex;
 
 
-int main(int argc, char const *argv[])
-{
+int main(int argc, char const *argv[]){
 	if(strcmp(argv[1],"wordcount")!=0 && strcmp(argv[1],"sort")!=0){ //if app doesnt equal wordcount AND it doesnt equal sort, the input is wrong
 		printf("error, app input not recognized");
 		return 0;
@@ -57,4 +56,3 @@ int main(int argc, char const *argv[])
 	reduce(app,imp,n_maps,n_reduces,outfile,inter_data);
 	return 0;
 }
-
