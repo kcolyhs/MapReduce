@@ -330,7 +330,12 @@ void reduce(enum Application app, enum Implementation imp,int n_maps, int n_redu
 		shm_unlink("after");
 		shm_unlink("afterreduce");
 		shm_unlink("OS");
-	}
+	}else if(app==sort && imp == procs){
+	
+	}else if(app==sort && imp == threads){
+
+
+	} 
 }
 
 void* nextTokenList();
