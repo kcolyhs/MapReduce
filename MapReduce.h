@@ -114,7 +114,7 @@ void* map(enum Application app, enum Implementation imp, int n_maps, char* infil
 		shmdt(after);
 		shmctl(shmget(after_fd,tokenlist->length*30,O_CREAT | O_RDWR), IPC_RMID, NULL);
 		munmap(after, tokenlist->length*30);
-		return (void*)tokenlist->length;//??
+		return (void*)tokenlist;//??
 	}else if(app==sort && imp==threads){
 		intlist * integerList = intParseInput(infile);
 		intvec_list * intvec_arr = createIntVecList(50);
@@ -244,7 +244,8 @@ void reduce(enum Application app, enum Implementation imp,int n_maps, int n_redu
 		fclose(f);
 	}else if(app==wordcount && imp == procs){
 		int after_fd;
-		int length = (int)inter_data;
+		toklist * tokenlist = (toklist *)inter_data;
+		int length = tokenlist->length;
 		after_fd=shm_open("after", O_CREAT | O_RDWR, 0666);
 		char (*after)[30];
 		ftruncate(after_fd, length*30);
