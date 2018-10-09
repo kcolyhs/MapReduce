@@ -26,7 +26,7 @@ int main(int argc, char const *argv[]){
 		printf("error, impl input not recognized");
 		return 0;
 	}
-	enum Implementation imp;//should probably use an enum
+	enum Implementation imp;
 	if(strcmp(argv[2],"procs")==0){
 		imp = procs;
 	}else{
@@ -47,10 +47,8 @@ int main(int argc, char const *argv[]){
 	char* outfile=malloc(strlen(argv[6])+1);
 	strcpy(outfile,argv[6]);
 
-	
 	//Map phase
-	void* inter_data = map(app,imp,n_maps,infile,outfile);//Only return status code
-	
+	void* inter_data = map(app,imp,n_maps,infile,outfile);//Only return status code	
 
 	//Synchronize
 	reduce(app,imp,n_maps,n_reduces,outfile,inter_data);

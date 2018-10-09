@@ -39,7 +39,6 @@ toklist* createTokList(int initlen){
 void expandTokArray(toklist* tlist){
 	char** newarr = (char**)malloc(tlist->capacity*2*sizeof(char*));
 	memcpy(newarr,tlist->array,tlist->capacity*sizeof(char*));
-//	free(tlist->array);//changed tlist->array.free() to free(tlist->array)
 	tlist->array = newarr;
 	tlist->capacity *= 2;
 }
@@ -118,6 +117,7 @@ char* toLowerToken(char* token){
 	return token;
 }
 
+// Trims the whitespace and allocates for the new token
 char* trimToken(char* token){
 	char* start = token;
 	while(*start&&isspace(*start)){
