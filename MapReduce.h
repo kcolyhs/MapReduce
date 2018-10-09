@@ -13,10 +13,6 @@
 #include <sys/shm.h>
 #include <fcntl.h>
 
-//Function prototypes
-
-void* map(enum Application app, enum Implementation imp, int n_maps, char* infile, char* outfile);
-void reduce(enum Application app, enum Implementation imp,int n_maps, int n_reduces, char* outfile, void* inter_data);
 
 enum Implementation{
 	procs,
@@ -27,6 +23,10 @@ enum Application{
 	wordcount,
 	sort
 };
+
+//Function prototypes
+void* map(enum Application app, enum Implementation imp, int n_maps, char* infile, char* outfile);
+void reduce(enum Application app, enum Implementation imp,int n_maps, int n_reduces, char* outfile, void* inter_data);
 
 void* map(enum Application app, enum Implementation imp, int n_maps, char* infile, char* outfile){
 	if(app==wordcount && imp==threads){
