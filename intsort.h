@@ -54,7 +54,7 @@ intvec_list* createIntVecList(int initlen){
 	intvec_list* newlist = (intvec_list*)malloc(sizeof(intvec_list));
 	newlist->length = 0;
 	newlist->capacity = initlen;
-	newlist->array = (char**)malloc(initlen*sizeof(intvec));
+	newlist->array = (intvec*)malloc(initlen*sizeof(intvec));
 	return newlist;
 }
 

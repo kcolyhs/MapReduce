@@ -75,7 +75,7 @@ veclist* createVecList(int initlen){
 	veclist* newlist = (veclist*)malloc(sizeof(veclist));
 	newlist->length = 0;
 	newlist->capacity = initlen;
-	newlist->array = (char**)malloc(initlen*sizeof(wordvec));//malloc is casted to char** but newlist->array is a char*. why?
+	newlist->array = (wordvec*)malloc(initlen*sizeof(wordvec));//malloc is casted to char** but newlist->array is a char*. why?
 	return newlist;
 }
 
@@ -125,7 +125,7 @@ char* trimToken(char* token){
 	size_t length = end - start +1;
 	char* newtoken = malloc(length+1);
 	memcpy(newtoken,start,length);
-	newtoken[length] = NULL;
+	newtoken[length] = 0;
 	return newtoken;
 }
 
