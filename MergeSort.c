@@ -13,7 +13,16 @@
 #include <pthread.h>
 
 
-
+//Function prototypes
+void merge(int l, int m, int r, veclist *list);
+void mergeInt(int l, int m, int r, intvec_list *list);
+void mergeProc(int l, int m, int r,int length);
+void mergeIntProc(int l, int m, int r,int length);
+void mergeSort(int l, int r, veclist *list);
+void mergeSortInt(int l, int r, intvec_list *list);
+void mergeSortIntProc(int l, int r, int length);
+void mergeSortProc(int l, int r, int length);
+void* mergeThreaded(void* arg);
 
 void merge(int l, int m, int r, veclist *list){
 	int l1,l2,i;
@@ -110,8 +119,6 @@ void mergeProc(int l, int m, int r,int length){
 	munmap(after_sort, (length+1) *30);
 }
 
-
-
 void mergeIntProc(int l, int m, int r,int length){
 	int shm_fd = shm_open("OS", O_CREAT | O_RDWR, 0666);
 	ftruncate(shm_fd, length*sizeof(int));
@@ -159,7 +166,6 @@ void mergeSort(int l, int r, veclist *list){
 	}
 }
 
-
 void mergeSortInt(int l, int r, intvec_list *list){
 
 	if(l<r){
@@ -169,7 +175,6 @@ void mergeSortInt(int l, int r, intvec_list *list){
 		mergeInt(l,m,r,list);
 	}
 }
-
 
 void mergeSortIntProc(int l, int r, int length){
 	if(l<r){
@@ -188,11 +193,4 @@ void mergeSortProc(int l, int r, int length){
 		mergeSortProc(m+1,r,length);
 		mergeProc(l,m,r,length);
 	}
-}
-void* mergeThreaded(void* arg){
-	veclist *list = (veclist*)arg;
-	int l = 0;
-	int r = list->length-1;
-	mergeSort(l,r,list);
-
 }
