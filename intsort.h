@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+
+
 typedef struct IntList{
 	int length;
 	int size;
@@ -8,7 +10,7 @@ typedef struct IntList{
 	int* array;
 }intlist;
 
-//Placeholder for Integer List from Sort CSV File
+// Constructor for IntList struct
 intlist* createIntList(int initlen){
 	intlist* newlist = (intlist*)malloc(sizeof(intlist));
 	newlist->length = 0;
@@ -17,7 +19,7 @@ intlist* createIntList(int initlen){
 	return newlist;
 }
 
-//Placeholder to Dynamically Expand Integer List Array
+// Doubles the capacity of IntList
 void expandIntArray(intlist* list){
 	int* newarr = (int*)malloc(list->capacity*2*sizeof(int));
 	memcpy(newarr,list->array,list->capacity*sizeof(int));
@@ -26,7 +28,7 @@ void expandIntArray(intlist* list){
 	list->capacity *= 2;
 }
 
-//Placeholder to add number to Integer List
+// Adds a number to IntList
 void addToIntlist(intlist* list,int num){
 	if(list->length+1>list->capacity){
 		expandIntArray(list);
@@ -36,7 +38,9 @@ void addToIntlist(intlist* list,int num){
 	return;
 }
 
-//Basic struct to store value of integer in list
+// Basic struct to store value of integer in list
+// Although for this application it is unnecessary it makes
+// adding more info in the future easier
 typedef struct IntVector{
 	int value;
 }intvec;
@@ -49,7 +53,7 @@ typedef struct IntVecList{
 	pthread_mutex_t lock;
 }intvec_list;
   
-//Create New Dynamic Integer Vector List 
+// Create New Dynamic Integer Vector List 
 intvec_list* createIntVecList(int initlen){
 	intvec_list* newlist = (intvec_list*)malloc(sizeof(intvec_list));
 	newlist->length = 0;
@@ -58,7 +62,7 @@ intvec_list* createIntVecList(int initlen){
 	return newlist;
 }
 
-//Expand Dynamic Array by Doubling Capacity
+// Expand Dynamic Array by Doubling Capacity
 void expandIntVecArray(intvec_list* vlist){
 	intvec* newarr = (intvec*)malloc(vlist->capacity*2*sizeof(intvec));
 	memcpy(newarr,vlist->array,vlist->capacity*sizeof(intvec));
@@ -67,7 +71,7 @@ void expandIntVecArray(intvec_list* vlist){
 	vlist->capacity *= 2;
 }
 
-//Add New Integer from Parser into Dynamic Vector List
+// Add New Integer from Parser into Dynamic Vector List vlist
 void addIntToIntVecList(intvec_list* vlist, int value){
 	pthread_mutex_lock(&vlist->lock);
 	if(vlist->length+1>vlist->capacity){
@@ -80,7 +84,7 @@ void addIntToIntVecList(intvec_list* vlist, int value){
 	return;
 }
 
-//Parse Integer Sort Inputfile
+// Parse Integer Sort Inputfile - Returns an intList struct
 intlist * intParseInput (char *inputfile){
 
 	FILE *file = fopen(inputfile, "r");
@@ -97,7 +101,7 @@ intlist * intParseInput (char *inputfile){
 	return intList;
 }
 
-//Split Int List among n tasks
+// Split Int List among n tasks
 void divideIntList(intvec_list* list,int n_reduces){
 	int remaining = list->length;
 	if(n_reduces>remaining){
@@ -107,7 +111,7 @@ void divideIntList(intvec_list* list,int n_reduces){
 
 }
 
-//Integer Sort Map Struct
+// Integer Sort Map Struct
 typedef struct intSortMap{
         int s;
         int e;
@@ -115,7 +119,7 @@ typedef struct intSortMap{
         intvec_list* intvec_arr;
 }intSortMap;
 
-//Start Map for Integer Sort
+// Start Map for Integer Sort
 intSortMap* createIntSortMap(int start, int end, intlist* integerList, intvec_list* intvec_arr){
         intSortMap * count = (intSortMap*)malloc(sizeof(intSortMap));
         count->s = start;
@@ -125,7 +129,7 @@ intSortMap* createIntSortMap(int start, int end, intlist* integerList, intvec_li
         return count;
 }
 
-
+// Map procedure each task must do 
 void* mapIntThread(void* arg){
 	intSortMap* tmp = (intSortMap*)arg;
 	int i = tmp->s;
@@ -134,6 +138,7 @@ void* mapIntThread(void* arg){
 	}
 }
 
+// 404 missing method body
 void* reduceIntThread(void* arg){
 
 }

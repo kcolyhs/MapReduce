@@ -11,6 +11,8 @@
 #include <sys/ipc.h>
 #include <sys/shm.h>
 #include <fcntl.h>
+
+
 //Dynamic array for storing the tokens after parsing input but before mapping to vectors
 //Doubles in size when capacity is reached
 //char** array points to an growing array of char* in the heap which in turn point to tokens as null-terminated strings
@@ -31,8 +33,9 @@ toklist* createTokList(int initlen){
 	newlist->array = (char**)malloc(initlen*sizeof(char*));//changed newlist.array to newlist->array
 	return newlist;
 }
-//doubles the length of the token list at the address toklist* points to
-//by allocating twice the size copying over existing data and then freeing the old array
+
+// Doubles the length of the token list at the address toklist* points to
+// by allocating twice the size copying over existing data and then freeing the old array
 void expandTokArray(toklist* tlist){
 	char** newarr = (char**)malloc(tlist->capacity*2*sizeof(char*));
 	memcpy(newarr,tlist->array,tlist->capacity*sizeof(char*));
@@ -40,6 +43,7 @@ void expandTokArray(toklist* tlist){
 	tlist->array = newarr;
 	tlist->capacity *= 2;
 }
+
 //Adds a new entry to the token list
 void addToTokenlist(toklist* tlist,char* token){
 	if(tlist->length+1>tlist->capacity){
@@ -56,6 +60,7 @@ void addToTokenlist(toklist* tlist,char* token){
 	tlist->length++;
 	return;
 }
+
 //Basic struct to store key/value pairing of word to its count
 typedef struct WordVector{
 	char* word;
@@ -71,6 +76,7 @@ typedef struct VectorList{
 	pthread_mutex_t lock;
 }veclist;
 
+// Constructor for VectorList
 veclist* createVecList(int initlen){
 	veclist* newlist = (veclist*)malloc(sizeof(veclist));
 	newlist->length = 0;
@@ -79,6 +85,7 @@ veclist* createVecList(int initlen){
 	return newlist;
 }
 
+// Doubles the vector arrays capacity
 void expandVecArray(veclist* vlist){
 	wordvec* newarr = (wordvec*)malloc(vlist->capacity*2*sizeof(wordvec));
 	memcpy(newarr,vlist->array,vlist->capacity*sizeof(wordvec));
@@ -87,6 +94,7 @@ void expandVecArray(veclist* vlist){
 	vlist->capacity *= 2;
 }
 
+// Adds token to VecList vlist
 void addToktoVecList(veclist* vlist,char* token){
 	pthread_mutex_lock(&vlist->lock);
 	if(vlist->length+1>vlist->capacity){
@@ -99,7 +107,6 @@ void addToktoVecList(veclist* vlist,char* token){
 	pthread_mutex_unlock(&vlist->lock);
 	return;
 }
-
 
 //Converts all characters in token to lowercase
 char* toLowerToken(char* token){
@@ -142,8 +149,6 @@ void RemoveSpaces(char* source)
   *i = 0;
 }
 
-
-
 //Returns parsed input file
 toklist* wcParseInput(char* inputfile){
 
@@ -178,6 +183,8 @@ void divideVecList(veclist* vlist,int n_reduces){
 	
 
 }
+
+// Struct to hold the meta-data for the individual mapping tasks
 typedef struct wordCountMap{
         int s;
         int e;
@@ -185,6 +192,7 @@ typedef struct wordCountMap{
         veclist* vecarr;
 }wordCountMap;
 
+// Constructor for the wordCountMap struct
 wordCountMap* createWordCountMap(int start, int end, toklist* tokenlist, veclist* vecarr){
         wordCountMap * count = (wordCountMap*)malloc(sizeof(wordCountMap));
         count->s = start;
@@ -194,9 +202,6 @@ wordCountMap* createWordCountMap(int start, int end, toklist* tokenlist, veclist
         return count;
 }
 
-/*
-Functions to create:
-*/
 void* mapThread(void* arg){
 	wordCountMap* tmp = (wordCountMap*)arg;
 	int i = tmp->s;
@@ -205,6 +210,7 @@ void* mapThread(void* arg){
 	}
 }
 
+// Struct to hold the meta-data for the individual reduce tasks
 typedef struct wordCountReduce{
         int s;
         int e;
@@ -212,6 +218,7 @@ typedef struct wordCountReduce{
         veclist* vecarr;
 }wordCountReduce;
 
+// Constructor for the wordCountReduce struct
 wordCountReduce* createWordCountReduce(int start, int end, veclist* master){
 	wordCountReduce * count = (wordCountReduce*)malloc(sizeof(wordCountReduce));
 	count->s = start;

@@ -12,6 +12,12 @@
 #include <sys/ipc.h>
 #include <sys/shm.h>
 #include <fcntl.h>
+
+//Function prototypes
+
+void* map(enum Application app, enum Implementation imp, int n_maps, char* infile, char* outfile);
+void reduce(enum Application app, enum Implementation imp,int n_maps, int n_reduces, char* outfile, void* inter_data);
+
 enum Implementation{
 	procs,
 	threads
@@ -108,7 +114,7 @@ void* map(enum Application app, enum Implementation imp, int n_maps, char* infil
 		shmdt(after);
 		shmctl(shmget(after_fd,tokenlist->length*30,O_CREAT | O_RDWR), IPC_RMID, NULL);
 		munmap(after, tokenlist->length*30);
-		return (void*)tokenlist->length;
+		return (void*)tokenlist->length;//??
 	}else if(app==sort && imp==threads){
 		intlist * integerList = intParseInput(infile);
 		intvec_list * intvec_arr = createIntVecList(50);
@@ -139,15 +145,10 @@ void* map(enum Application app, enum Implementation imp, int n_maps, char* infil
 		return (void*)intvec_arr;
 	}
 	else if(app==sort && imp==procs){
-		//TODO
-		//parse input
-		//multiprocess it to shared memory
-		//sort
 		intlist * intvec_arr = intParseInput(infile);
 		int div = intvec_arr->length / n_maps;
 		int mod = intvec_arr->length %n_maps;
 		int i =0;
-		//	printf("%s\n", "hi");
 		pthread_mutex_t *mutex = NULL;
 		pthread_mutexattr_t attrmutex;
 		pthread_mutexattr_init(&attrmutex);
@@ -157,15 +158,11 @@ void* map(enum Application app, enum Implementation imp, int n_maps, char* infil
 		mutex = (pthread_mutex_t*) mmap(NULL,sizeof(pthread_mutex_t),PROT_READ | PROT_WRITE, MAP_SHARED, des_mutex,0);
 		pthread_mutex_init(mutex, &attrmutex);
 
-
-
 		int shm_fd = shm_open("OS", O_CREAT | O_RDWR, 0666);
 		ftruncate(shm_fd, intvec_arr->length*sizeof(int));
 
 		int *testing;
 		testing =mmap(0,intvec_arr->length*sizeof(int), PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd, 0);
-
-
 
 		int after_fd;
 		after_fd=shm_open("after", O_CREAT | O_RDWR, 0666);
@@ -197,8 +194,6 @@ void* map(enum Application app, enum Implementation imp, int n_maps, char* infil
 
 		munmap(after_fd, intvec_arr->length*sizeof(int));
 
-		//mergeSortIntProc(0,intvec_arr->length-1,intvec_arr->length);
-
 		intvec_list * intvec_arra = createIntVecList(50);
 
 		for(i=0; i<intvec_arr->length; i++){
@@ -220,11 +215,6 @@ void* map(enum Application app, enum Implementation imp, int n_maps, char* infil
    4.Collect the combined structure(potentially shuffle) and return a pointer to the shared memory
    */
 void reduce(enum Application app, enum Implementation imp,int n_maps, int n_reduces, char* outfile, void* inter_data){
-	//Initiate the tasks
-	//Split between the tasks
-	//Execute the tasks
-	//Merge the tasks results
-	//Output the merged result
 	if(app==wordcount && imp == threads){
 		veclist* vecarr = (veclist*)inter_data;
 		int j=0;
@@ -241,7 +231,6 @@ void reduce(enum Application app, enum Implementation imp,int n_maps, int n_redu
 			}
 			reduce[j]=createWordCountReduce(start,end,vecarr);
 			pthread_create(&tid[j],NULL,reduceThread,(void*)reduce[j]);
-			//	printf("%p\n",(void*)reduce[j]->vecarr);
 		}
 		for(i=0; i<n_reduces; i++){
 			pthread_join(tid[i],NULL);
@@ -249,13 +238,10 @@ void reduce(enum Application app, enum Implementation imp,int n_maps, int n_redu
 		FILE *f = fopen(outfile,"w");
 		for(i=0; i<n_reduces; i++){//NEED TO MERGE THE END OF ONE LIST AND THE BEGINNING OF THE NEXT LIST, IF SAME
 			for(j=0; j<reduce[i]->vecarr->length-1; j++){
-				//printf("%s\t%i\n", reduce[i]->vecarr->array[j].word,reduce[i]->vecarr->array[j].count);
 				fprintf(f,"%s\t%i\n", reduce[i]->vecarr->array[j].word,reduce[i]->vecarr->array[j].count);
 			}
 		}
-
 		fclose(f);
-
 	}else if(app==wordcount && imp == procs){
 		int after_fd;
 		int length = (int)inter_data;
@@ -278,13 +264,6 @@ void reduce(enum Application app, enum Implementation imp,int n_maps, int n_redu
 		int j=0;
 		int div = length / n_reduces;
 		int mod = length % n_reduces;
-		//we have the list of words sorted in after
-		//split after into different sections, and collapse em
-		//
-
-
-		//reduceProc(0,length,length);
-
 
 		for(;i<n_reduces; i++){
 			int pid=fork();
@@ -303,7 +282,6 @@ void reduce(enum Application app, enum Implementation imp,int n_maps, int n_redu
 		for(i=0; i<n_reduces; i++){
 			wait(NULL);
 		}
-		//	reduceProc(0,length,length);		
 		int newlen =0;
 		for(i=0; i<length; i++){
 			if(strcmp(afterReduce[i],"\0")==0){
@@ -312,7 +290,6 @@ void reduce(enum Application app, enum Implementation imp,int n_maps, int n_redu
 				break;
 			}
 			newlen+=1;
-			//	printf("%s\n", afterReduce[i]);
 		}
 
 		FILE *f = fopen(outfile, "w");
@@ -346,24 +323,15 @@ void reduce(enum Application app, enum Implementation imp,int n_maps, int n_redu
 
 		
 	}else if(app==sort && imp == threads){
-		
-	
 		int i;
-                pthread_t *tid = malloc(n_maps * sizeof(pthread_t));
-                for(i=0; i<n_maps; i++){
-                        //intSortMap* tmp = createIntSortMap(start,end,integerList,intvec_arr);
-                        pthread_create(&tid[i],NULL,reduceIntThread,(void*)NULL);
-                }
+        pthread_t *tid = malloc(n_maps * sizeof(pthread_t));
+        for(i=0; i<n_maps; i++){
+                //intSortMap* tmp = createIntSortMap(start,end,integerList,intvec_arr);
+                pthread_create(&tid[i],NULL,reduceIntThread,(void*)NULL);
+        }
 
-                for(i=0; i<n_maps; i++){
-                        pthread_join(tid[i],NULL);
-                }
-
-
-
-
+        for(i=0; i<n_maps; i++){
+                pthread_join(tid[i],NULL);
+        }
 	} 
 }
-
-void* nextTokenList();
-
