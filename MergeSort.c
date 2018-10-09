@@ -194,10 +194,3 @@ void mergeSortProc(int l, int r, int length){
 		mergeProc(l,m,r,length);
 	}
 }
-
-void* mergeThreaded(void* arg){
-	veclist *list = (veclist*)arg;
-	int l = 0;
-	int r = list->length-1;
-	mergeSort(l,r,list);
-}
